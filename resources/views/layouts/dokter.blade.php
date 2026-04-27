@@ -23,7 +23,7 @@
                 </div>
                 
                 <div class="flex items-center space-x-6">
-                    <span class="text-gray-700">| Welcome, dr. Andi Wijaya</span>
+                    <span class="text-gray-700">| Welcome, dr. Reyvan Duscha Nasuha</span>
                     <form action="{{ route('logout') }}" method="POST">
                         @csrf
                         <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors">
