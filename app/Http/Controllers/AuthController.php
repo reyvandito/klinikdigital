@@ -29,17 +29,17 @@ class AuthController extends Controller
         $users = [
             'admin' => [
                 'email' => 'admin@gmail.com',
-                'password' => 'password',
+                'password' => 'admin',
                 'role' => 'admin'
             ],
             'dokter' => [
                 'email' => 'dokter@gmail.com',
-                'password' => 'password',
+                'password' => 'dokter',
                 'role' => 'dokter'
             ],
             'pasien' => [
                 'email' => 'pasien@gmail.com',
-                'password' => 'password',
+                'password' => 'pasien',
                 'role' => 'pasien'
             ]
         ];
