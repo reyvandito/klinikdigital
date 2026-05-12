@@ -68,6 +68,43 @@ class DokterDashboardController extends Controller
         
         return view('pages.dokter.dashboard', compact('pasienRequests', 'dokterStatus', 'jadwalDokter'));
     }
+
+    // ==================== REKAM MEDIS ====================
+public function rekamMedisIndex()
+{
+    return view('pages.dokter.rekam-medis.index');
+}
+
+public function rekamMedisCreate()
+{
+    return view('pages.dokter.rekam-medis.create');
+}
+
+public function rekamMedisEdit(Request $request)
+{
+    $id = $request->query('id');
+    return view('pages.dokter.rekam-medis.edit', compact('id'));
+}
+
+public function rekamMedisStore(Request $request)
+{
+    return redirect()->route('dokter.rekam-medis.index')->with('success', 'Rekam medis berhasil disimpan');
+}
+
+public function rekamMedisUpdate(Request $request, $id)
+{
+    return redirect()->route('dokter.rekam-medis.index')->with('success', 'Rekam medis berhasil diupdate');
+}
+
+public function rekamMedisDelete($id)
+{
+    return redirect()->route('dokter.rekam-medis.index')->with('success', 'Rekam medis berhasil dihapus');
+}
+
+public function rekamMedisShow($id)
+{
+    return view('pages.dokter.rekam-medis.show', compact('id'));
+}
     
     public function updateStatus(Request $request)
     {
@@ -88,4 +125,21 @@ class DokterDashboardController extends Controller
     {
         return redirect()->back()->with('success', 'Konsultasi selesai');
     }
+
+// ==================== DAFTAR PASIEN ====================
+public function daftarPasien()
+{
+    return view('pages.dokter.pasien');
+}
+
+public function detailPasien($id)
+{
+    return view('pages.dokter.pasien-detail', compact('id'));
+}
+
+public function simpanCatatan(Request $request, $id)
+{
+    return redirect()->back()->with('success', 'Catatan berhasil disimpan');
+}
+
 }

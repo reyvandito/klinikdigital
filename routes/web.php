@@ -14,14 +14,13 @@ use App\Http\Controllers\DashboardPasienController;
 | Web Routes
 |--------------------------------------------------------------------------
 */
+
 // ==================== DASHBOARD ROUTES (untuk redirect setelah login) ====================
 Route::prefix('dashboard')->name('dashboard.')->group(function () {
     Route::get('/admin', [AdminController::class, 'index'])->name('admin');
     Route::get('/dokter', [DokterDashboardController::class, 'index'])->name('dokter');
     Route::get('/pasien', [DashboardPasienController::class, 'index'])->name('pasien');
 });
-
-
 
 // ==================== HOME & PUBLIC ROUTES ====================
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -109,6 +108,19 @@ Route::prefix('dokter')->name('dokter.')->group(function () {
         Route::get('/detail/{id}', [DokterDashboardController::class, 'detailPasien'])->name('detail');
         Route::post('/catatan/{id}', [DokterDashboardController::class, 'simpanCatatan'])->name('catatan');
     });
+
+    
+    
+    // ==================== REKAM MEDIS DOKTER ====================
+    Route::prefix('rekam-medis')->name('rekam-medis.')->group(function () {
+        Route::get('/', [DokterDashboardController::class, 'rekamMedisIndex'])->name('index');
+        Route::get('/create', [DokterDashboardController::class, 'rekamMedisCreate'])->name('create');
+        Route::post('/store', [DokterDashboardController::class, 'rekamMedisStore'])->name('store');
+        Route::get('/edit', [DokterDashboardController::class, 'rekamMedisEdit'])->name('edit');
+        Route::put('/update/{id}', [DokterDashboardController::class, 'rekamMedisUpdate'])->name('update');
+        Route::delete('/delete/{id}', [DokterDashboardController::class, 'rekamMedisDelete'])->name('delete');
+        Route::get('/show/{id}', [DokterDashboardController::class, 'rekamMedisShow'])->name('show');
+    });
 });
 
 // ==================== PASIEN ROUTES ====================
@@ -119,6 +131,7 @@ Route::prefix('pasien')->name('pasien.')->group(function () {
     // Profile
     Route::get('/profile', [DashboardPasienController::class, 'profile'])->name('profile');
     Route::put('/profile/update', [DashboardPasienController::class, 'updateProfile'])->name('profile.update');
+    Route::get('/detail/{id}', [DokterDashboardController::class, 'detailPasien'])->name('detail');
     
     // Reservasi (Buat Janji)
     Route::get('/reservasi', [ReservasiController::class, 'create'])->name('reservasi.create');
@@ -130,7 +143,7 @@ Route::prefix('pasien')->name('pasien.')->group(function () {
     Route::get('/riwayat', [ReservasiController::class, 'riwayat'])->name('riwayat');
     Route::get('/riwayat/detail/{id}', [ReservasiController::class, 'detailRiwayat'])->name('riwayat.detail');
     
-    // Rekam Medis
+    // Rekam Medis Pasien (melihat rekam medis sendiri)
     Route::get('/rekam-medis', [DashboardPasienController::class, 'rekamMedis'])->name('rekam-medis');
     Route::get('/rekam-medis/{id}', [DashboardPasienController::class, 'detailRekamMedis'])->name('rekam-medis.detail');
 });
