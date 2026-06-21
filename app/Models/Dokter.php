@@ -3,40 +3,44 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Dokter extends Model
 {
-    use HasFactory;
+    protected $table = 'dokter';
 
     protected $fillable = [
         'user_id',
+        'status',
         'spesialis',
         'no_str',
-        'status',
+        'foto',  // ← dari migration add_foto_to_dokter_table
     ];
 
-    // Relasi ke User (many-to-one)
-    public function user()
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
-    // Relasi ke Jadwal (one-to-many)
-    public function jadwals()
+    public function jadwal(): HasMany
     {
-        return $this->hasMany(Jadwal::class);
+        return $this->hasMany(Jadwal::class, 'dokter_id');
     }
 
-    // Relasi ke Konsultasi (one-to-many)
-    public function konsultasis()
+    public function konsultasi(): HasMany
     {
-        return $this->hasMany(Konsultasi::class);
+        return $this->hasMany(Konsultasi::class, 'dokter_id');
     }
 
-    // Nama lengkap dokter dari user
-    public function getNamaLengkapAttribute(): string
+    /**
+     * Accessor untuk foto dengan fallback ke default
+     */
+    public function getFotoUrlAttribute(): string
     {
-        return 'dr. ' . $this->user->name . ', ' . $this->spesialis;
+        if ($this->foto && file_exists(public_path('storage/' . $this->foto))) {
+            return asset('storage/' . $this->foto);
+        }
+        return asset('images/default-doctor.png');
     }
 }

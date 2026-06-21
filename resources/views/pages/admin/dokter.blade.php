@@ -1,77 +1,80 @@
 @extends('layouts.admin')
 
-@section('title', 'Kelola Dokter')
-@section('page-title', 'Kelola Dokter')
-
 @section('content')
-<div class="bg-white rounded-lg shadow-md p-6">
-    <div class="flex justify-between items-center mb-4">
-        <h2 class="text-xl font-bold text-gray-800">Daftar Dokter</h2>
-        <button onclick="alert('Tambah dokter baru')" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">
-            <i class="fas fa-plus mr-2"></i> Tambah Dokter
-        </button>
-    </div>
-    
-    <div class="overflow-x-auto">
-        <table class="w-full">
-            <thead class="bg-gray-50">
-                <tr>
-                    <th class="px-4 py-2 text-left">Nama</th>
-                    <th class="px-4 py-2 text-left">Spesialis</th>
-                    <th class="px-4 py-2 text-left">Email</th>
-                    <th class="px-4 py-2 text-left">Telepon</th>
-                    <th class="px-4 py-2 text-left">Status</th>
-                    <th class="px-4 py-2 text-left">Aksi</th>
-                </tr>
-            </thead>
-            <tbody id="dokterTableBody"></tbody>
-        </table>
+<div class="container mx-auto px-4 py-8">
+    <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold">Daftar Dokter</h1>
+            <a href="{{ route('admin.dokter.create') }}" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+                + Tambah Dokter
+            </a>
+        </div>
+
+        @if(session('success'))
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                {{ session('error') }}
+            </div>
+        @endif
+
+        <div class="overflow-x-auto">
+            <table class="min-w-full bg-white border">
+                <thead>
+                    <tr class="bg-gray-100">
+                        <th class="px-4 py-2 border text-left">Foto</th>
+                        <th class="px-4 py-2 border text-left">ID</th>
+                        <th class="px-4 py-2 border text-left">Nama</th>
+                        <th class="px-4 py-2 border text-left">Email</th>
+                        <th class="px-4 py-2 border text-left">Spesialis</th>
+                        <th class="px-4 py-2 border text-left">No STR</th>
+                        <th class="px-4 py-2 border text-left">Status</th>
+                        <th class="px-4 py-2 border text-left">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($dokters as $dokter)
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-4 py-2 border">
+                            <img src="{{ $dokter->foto_url ?? 'https://ui-avatars.com/api/?name=' . urlencode($dokter->user->nama ?? 'Dokter') . '&background=0D8ABC&color=fff&size=40' }}" 
+                                 alt="{{ $dokter->user->nama ?? 'Dokter' }}"
+                                 class="w-10 h-10 rounded-full object-cover">
+                        </td>
+                        <td class="px-4 py-2 border">{{ $dokter->id }}</td>
+                        <td class="px-4 py-2 border font-medium">{{ $dokter->user->nama ?? '-' }}</td>
+                        <td class="px-4 py-2 border">{{ $dokter->user->email ?? '-' }}</td>
+                        <td class="px-4 py-2 border">{{ $dokter->spesialis }}</td>
+                        <td class="px-4 py-2 border">{{ $dokter->no_str }}</td>
+                        <td class="px-4 py-2 border">
+                            <span class="px-2 py-1 rounded text-xs {{ $dokter->status == 'aktif' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
+                                {{ $dokter->status }}
+                            </span>
+                        </td>
+                        <td class="px-4 py-2 border">
+                            <a href="{{ route('admin.dokter.edit', $dokter->id) }}" class="text-blue-500 hover:text-blue-700 mr-2">Edit</a>
+                            <form action="{{ route('admin.dokter.delete', $dokter->id) }}" method="POST" class="inline">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="text-red-500 hover:text-red-700" onclick="return confirm('Yakin hapus dokter {{ $dokter->user->nama ?? 'ini' }}?')">Hapus</button>
+                            </form>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="8" class="px-4 py-4 text-center text-gray-500">Belum ada data dokter. Silakan tambah dokter baru.</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mt-4">
+            {{ $dokters->links() }}
+        </div>
     </div>
 </div>
-
-<script>
-    const dokterData = [
-        { id: 1, nama: 'dr. Andi Wijaya, Sp.PD', spesialis: 'Penyakit Dalam', email: 'andi@dokter.com', telepon: '081234567890', status: 'approved' },
-        { id: 2, nama: 'dr. Siti Rahma, Sp.A', spesialis: 'Anak', email: 'siti@dokter.com', telepon: '081234567891', status: 'approved' },
-        { id: 3, nama: 'dr. Budi Santoso', spesialis: 'Umum', email: 'budi@dokter.com', telepon: '081234567892', status: 'pending' },
-        { id: 4, nama: 'dr. Maya Sari', spesialis: 'Mata', email: 'maya@dokter.com', telepon: '081234567893', status: 'pending' },
-        { id: 5, nama: 'dr. Rizki Fadillah', spesialis: 'Kulit', email: 'rizki@dokter.com', telepon: '081234567894', status: 'approved' }
-    ];
-    
-    function renderDokter() {
-        let html = '';
-        for (const d of dokterData) {
-            const statusBadge = d.status === 'approved' 
-                ? '<span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Approved</span>'
-                : '<span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs">Pending</span>';
-            
-            html += `
-                <tr class="border-b">
-                    <td class="px-4 py-2">${d.nama}</td>
-                    <td class="px-4 py-2">${d.spesialis}</td>
-                    <td class="px-4 py-2">${d.email}</td>
-                    <td class="px-4 py-2">${d.telepon}</td>
-                    <td class="px-4 py-2">${statusBadge}</td>
-                    <td class="px-4 py-2">
-                        <button onclick="editDokter(${d.id})" class="text-blue-500 hover:text-blue-700 mr-2"><i class="fas fa-edit"></i></button>
-                        <button onclick="hapusDokter(${d.id})" class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button>
-                    </td>
-                </tr>
-            `;
-        }
-        document.getElementById('dokterTableBody').innerHTML = html;
-    }
-    
-    function editDokter(id) {
-        alert('Edit dokter dengan ID: ' + id);
-    }
-    
-    function hapusDokter(id) {
-        if (confirm('Hapus dokter ini?')) {
-            alert('Dokter berhasil dihapus');
-        }
-    }
-    
-    renderDokter();
-</script>
 @endsection

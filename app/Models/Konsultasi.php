@@ -3,41 +3,38 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Konsultasi extends Model
 {
-    use HasFactory;
+    protected $table = 'konsultasi';
 
     protected $fillable = [
-        'pasien_id',
-        'dokter_id',
         'jadwal_id',
+        'dokter_id',
+        'pasien_id',
         'keluhan',
-        'status',
+        'status'
     ];
 
-    // Relasi ke Pasien
-    public function pasien()
+    public function jadwal(): BelongsTo
     {
-        return $this->belongsTo(Pasien::class);
+        return $this->belongsTo(Jadwal::class, 'jadwal_id');
     }
 
-    // Relasi ke Dokter
-    public function dokter()
+    public function dokter(): BelongsTo
     {
-        return $this->belongsTo(Dokter::class);
+        return $this->belongsTo(Dokter::class, 'dokter_id');
     }
 
-    // Relasi ke Jadwal
-    public function jadwal()
+    public function pasien(): BelongsTo
     {
-        return $this->belongsTo(Jadwal::class);
+        return $this->belongsTo(Pasien::class, 'pasien_id');
     }
 
-    // Relasi ke Rekam Medis (one-to-one)
-    public function rekamMedis()
+    public function rekamMedis(): HasOne
     {
-        return $this->hasOne(RekamMedis::class);
+        return $this->hasOne(RekamMedis::class, 'konsultasi_id');
     }
 }

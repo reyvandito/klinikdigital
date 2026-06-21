@@ -11,7 +11,8 @@
             <p class="text-gray-500">Isi form berikut untuk mencatat rekam medis pasien</p>
         </div>
         
-        <x-dokter.form-rekam-medis />
+        {{-- Kirim variable ke component --}}
+        <x-dokter.form-rekam-medis :konsultasis="$konsultasis" :konsultasiTerpilih="$konsultasiTerpilih ?? null" />
     </div>
 </div>
 @endsection

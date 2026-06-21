@@ -14,7 +14,6 @@ class ReservasiController extends Controller
     // ==================== FORM BUAT RESERVASI ====================
     public function create()
     {
-        // Ambil semua dokter yang aktif beserta jadwal yang tersedia
         $dokters = Dokter::with('user')
             ->where('status', 'aktif')
             ->get();
@@ -26,22 +25,19 @@ class ReservasiController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'dokter_id'  => 'required|exists:dokters,id',
-            'jadwal_id'  => 'required|exists:jadwals,id',
+            'dokter_id'  => 'required|exists:dokter,id',
+            'jadwal_id'  => 'required|exists:jadwal,id',
             'keluhan'    => 'required|string|min:10|max:500',
         ]);
 
-        // Ambil pasien yang sedang login
         $pasien = Pasien::where('user_id', Auth::id())->firstOrFail();
 
-        // Cek jadwal masih tersedia
         $jadwal = Jadwal::where('id', $request->jadwal_id)
             ->where('dokter_id', $request->dokter_id)
             ->where('status', 'tersedia')
             ->where('sisa_kuota', '>', 0)
             ->firstOrFail();
 
-        // Cek pasien tidak booking jadwal yang sama dua kali
         $existing = Konsultasi::where('pasien_id', $pasien->id)
             ->where('jadwal_id', $jadwal->id)
             ->whereIn('status', ['menunggu', 'dikonfirmasi', 'berlangsung'])
@@ -53,7 +49,6 @@ class ReservasiController extends Controller
                 ->withInput();
         }
 
-        // Buat konsultasi
         $konsultasi = Konsultasi::create([
             'pasien_id'  => $pasien->id,
             'dokter_id'  => $request->dokter_id,
@@ -62,10 +57,8 @@ class ReservasiController extends Controller
             'status'     => 'menunggu',
         ]);
 
-        // Kurangi sisa kuota
         $jadwal->decrement('sisa_kuota');
 
-        // Kalau kuota habis, ubah status jadwal jadi penuh
         if ($jadwal->fresh()->sisa_kuota <= 0) {
             $jadwal->update(['status' => 'penuh']);
         }
@@ -84,13 +77,12 @@ class ReservasiController extends Controller
     // ==================== BATALKAN RESERVASI ====================
     public function batal($id)
     {
-        $pasien     = Pasien::where('user_id', Auth::id())->firstOrFail();
+        $pasien = Pasien::where('user_id', Auth::id())->firstOrFail();
         $konsultasi = Konsultasi::where('id', $id)
             ->where('pasien_id', $pasien->id)
             ->whereIn('status', ['menunggu', 'dikonfirmasi'])
             ->firstOrFail();
 
-        // Kembalikan sisa kuota
         $jadwal = $konsultasi->jadwal;
         if ($jadwal) {
             $jadwal->increment('sisa_kuota');
@@ -105,7 +97,7 @@ class ReservasiController extends Controller
             ->with('success', 'Reservasi berhasil dibatalkan.');
     }
 
-    // ==================== RIWAYAT RESERVASI PASIEN ====================
+    // ==================== RIWAYAT RESERVASI ====================
     public function riwayat(Request $request)
     {
         $pasien = Pasien::where('user_id', Auth::id())->firstOrFail();
@@ -119,13 +111,16 @@ class ReservasiController extends Controller
 
         $konsultasis = $query->latest()->paginate(10);
 
+        // Debug: cek apakah ada data
+        // dd($konsultasis);
+
         return view('pages.pasien.riwayat-reservasi', compact('konsultasis'));
     }
 
     // ==================== DETAIL RIWAYAT ====================
     public function detailRiwayat($id)
     {
-        $pasien     = Pasien::where('user_id', Auth::id())->firstOrFail();
+        $pasien = Pasien::where('user_id', Auth::id())->firstOrFail();
         $konsultasi = Konsultasi::with(['dokter.user', 'jadwal', 'rekamMedis'])
             ->where('id', $id)
             ->where('pasien_id', $pasien->id)
@@ -134,10 +129,12 @@ class ReservasiController extends Controller
         return view('pages.pasien.riwayat-detail', compact('konsultasi'));
     }
 
-    // ==================== AJAX: AMBIL JADWAL BERDASARKAN DOKTER ====================
+    // ==================== AJAX: JADWAL BY DOKTER ====================
     public function getJadwalByDokter(Request $request)
     {
-        $request->validate(['dokter_id' => 'required|exists:dokters,id']);
+        $request->validate([
+            'dokter_id' => 'required|exists:dokter,id'
+        ]);
 
         $jadwals = Jadwal::where('dokter_id', $request->dokter_id)
             ->where('status', 'tersedia')

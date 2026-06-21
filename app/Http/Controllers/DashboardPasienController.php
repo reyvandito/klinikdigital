@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Dokter;
 use App\Models\Konsultasi;
 use App\Models\Pasien;
 use App\Models\RekamMedis;
@@ -11,7 +12,6 @@ use Illuminate\Support\Facades\Hash;
 
 class DashboardPasienController extends Controller
 {
-    // ==================== HELPER: AMBIL PASIEN YANG LOGIN ====================
     private function getPasienLogin(): Pasien
     {
         return Pasien::where('user_id', Auth::id())->firstOrFail();
@@ -23,31 +23,25 @@ class DashboardPasienController extends Controller
         $pasien = $this->getPasienLogin();
         $user   = Auth::user();
 
-        // Statistik pasien
         $stats = [
             'total_konsultasi' => Konsultasi::where('pasien_id', $pasien->id)->count(),
             'konsultasi_aktif' => Konsultasi::where('pasien_id', $pasien->id)
                                       ->whereIn('status', ['menunggu', 'dikonfirmasi', 'berlangsung'])
                                       ->count(),
-            'total_rekam_medis'=> RekamMedis::whereHas('konsultasi', function ($q) use ($pasien) {
+            'total_rekam_medis' => RekamMedis::whereHas('konsultasi', function ($q) use ($pasien) {
                                       $q->where('pasien_id', $pasien->id);
                                   })->count(),
         ];
 
-        // Janji temu yang akan datang
         $janjiTemu = Konsultasi::with(['dokter.user', 'jadwal'])
             ->where('pasien_id', $pasien->id)
             ->whereIn('status', ['menunggu', 'dikonfirmasi'])
             ->whereHas('jadwal', function ($q) {
                 $q->whereDate('tanggal', '>=', today());
             })
-            ->orderByHas('jadwal', function ($q) {
-                $q->orderBy('tanggal');
-            })
             ->take(3)
             ->get();
 
-        // Riwayat terbaru
         $riwayatTerbaru = Konsultasi::with(['dokter.user', 'jadwal'])
             ->where('pasien_id', $pasien->id)
             ->where('status', 'selesai')
@@ -55,12 +49,19 @@ class DashboardPasienController extends Controller
             ->take(5)
             ->get();
 
+        // Rekomendasi dokter (3 dokter aktif random)
+        $dokters = Dokter::with('user')
+            ->where('status', 'aktif')
+            ->inRandomOrder()
+            ->take(3)
+            ->get();
+
         return view('pages.pasien.dashboard', compact(
-            'pasien', 'user', 'stats', 'janjiTemu', 'riwayatTerbaru'
+            'pasien', 'user', 'stats', 'janjiTemu', 'riwayatTerbaru', 'dokters'
         ));
     }
 
-    // ==================== PROFILE PASIEN ====================
+    // ==================== PROFILE ====================
     public function profile()
     {
         $pasien = $this->getPasienLogin();
@@ -74,7 +75,7 @@ class DashboardPasienController extends Controller
         $pasien = $this->getPasienLogin();
 
         $request->validate([
-            'name'          => 'required|string|min:3|max:100',
+            'nama'          => 'required|string|min:3|max:100',
             'email'         => 'required|email|unique:users,email,' . $user->id,
             'nomor_hp'      => 'nullable|string|min:10|max:15',
             'tanggal_lahir' => 'nullable|date|before:today',
@@ -83,13 +84,13 @@ class DashboardPasienController extends Controller
         ]);
 
         $user->update([
-            'name'          => $request->name,
+            'nama'          => $request->nama,
             'email'         => $request->email,
             'nomor_hp'      => $request->nomor_hp,
             'jenis_kelamin' => $request->jenis_kelamin,
         ]);
 
-        if ($request->password) {
+        if ($request->filled('password')) {
             $request->validate(['password' => 'min:6|confirmed']);
             $user->update(['password' => Hash::make($request->password)]);
         }
@@ -102,7 +103,7 @@ class DashboardPasienController extends Controller
         return redirect()->back()->with('success', 'Profile berhasil diperbarui.');
     }
 
-    // ==================== REKAM MEDIS PASIEN ====================
+    // ==================== REKAM MEDIS ====================
     public function rekamMedis()
     {
         $pasien = $this->getPasienLogin();
@@ -119,7 +120,8 @@ class DashboardPasienController extends Controller
 
     public function detailRekamMedis($id)
     {
-        $pasien     = $this->getPasienLogin();
+        $pasien = $this->getPasienLogin();
+
         $rekamMedis = RekamMedis::with(['konsultasi.dokter.user', 'konsultasi.jadwal'])
             ->whereHas('konsultasi', function ($q) use ($pasien) {
                 $q->where('pasien_id', $pasien->id);

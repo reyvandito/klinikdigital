@@ -13,27 +13,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="bg-gray-100">
-    <!-- Navbar Dokter -->
-    <nav class="bg-white shadow-md">
-        <div class="container mx-auto px-4">
-            <div class="flex justify-between items-center py-4">
-                <div class="flex items-center space-x-2">
-                    <i class="fas fa-hospital-user text-2xl text-blue-500"></i>
-                    <span class="font-bold text-xl">Klinik Digital - Dokter Panel</span>
-                </div>
-                
-                <div class="flex items-center space-x-6">
-                    <span class="text-gray-700">| Welcome, dr. Reyvan Duscha Nasuha</span>
-                    <form action="{{ route('logout') }}" method="POST">
-                        @csrf
-                        <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors">
-                            <i class="fas fa-sign-out-alt mr-2"></i>Logout
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </nav>
+    
+    {{-- Navbar Dokter (panggil component navbar dokter) --}}
+    <x-dokter.navbar />
     
     <!-- Main Content -->
     <main class="min-h-screen pb-16">
@@ -44,6 +26,12 @@
                 </div>
             @endif
             
+            @if(session('error'))
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                    {{ session('error') }}
+                </div>
+            @endif
+            
             @yield('content')
         </div>
     </main>
@@ -51,8 +39,11 @@
     <!-- Footer -->
     <footer class="bg-gray-800 text-white mt-16">
         <div class="container mx-auto px-4 py-4 text-center">
-            <p class="text-sm text-gray-400">&copy; 2024 Klinik Digital. All rights reserved.</p>
+            <p class="text-sm text-gray-400">&copy; {{ date('Y') }} Klinik Digital. All rights reserved.</p>
         </div>
     </footer>
+    
+    {{-- Modal tambahan (opsional) --}}
+    @stack('modals')
 </body>
 </html>

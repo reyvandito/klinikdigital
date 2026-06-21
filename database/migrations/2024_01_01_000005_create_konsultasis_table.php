@@ -8,19 +8,19 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('konsultasis', function (Blueprint $table) {
+        Schema::create('konsultasi', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('pasien_id')->constrained('pasiens')->onDelete('cascade');
-            $table->foreignId('dokter_id')->constrained('dokters')->onDelete('cascade');
-            $table->foreignId('jadwal_id')->constrained('jadwals')->onDelete('cascade');
+            $table->foreignId('jadwal_id')->constrained('jadwal')->onDelete('cascade');
+            $table->foreignId('dokter_id')->constrained('dokter')->onDelete('cascade');
+            $table->foreignId('pasien_id')->constrained('pasien')->onDelete('cascade');
             $table->text('keluhan');
-            $table->enum('status', ['menunggu', 'dikonfirmasi', 'berlangsung', 'selesai', 'dibatalkan'])->default('menunggu');
+            $table->string('status');
             $table->timestamps();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('konsultasis');
+        Schema::dropIfExists('konsultasi');
     }
 };

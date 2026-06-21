@@ -7,14 +7,12 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules\Password;
 
 class AuthController extends Controller
 {
     // ==================== HALAMAN LOGIN ====================
     public function showLogin()
     {
-        // Kalau sudah login, redirect sesuai role
         if (Auth::check()) {
             return $this->redirectByRole(Auth::user()->role);
         }
@@ -36,9 +34,8 @@ class AuthController extends Controller
             $request->session()->regenerate();
             $user = Auth::user();
 
-            // Redirect berdasarkan role
             return $this->redirectByRole($user->role)
-                ->with('success', 'Selamat datang, ' . $user->name . '!');
+                ->with('success', 'Selamat datang, ' . ($user->nama ?? $user->name) . '!');
         }
 
         return back()
@@ -59,38 +56,36 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $request->validate([
-            'name'                  => 'required|string|min:3|max:100',
+            'nama'                  => 'required|string|min:3|max:100',
             'email'                 => 'required|email|unique:users,email',
-            'phone'                 => 'required|string|min:10|max:15',
+            'nomor_hp'              => 'required|string|min:10|max:15',
             'password'              => 'required|min:6|confirmed',
             'tanggal_lahir'         => 'nullable|date|before:today',
             'alamat'                => 'nullable|string|max:255',
             'jenis_kelamin'         => 'nullable|in:L,P',
         ]);
 
-        // Buat user baru dengan role pasien
         $user = User::create([
-            'name'          => $request->name,
+            'nama'          => $request->nama,
             'email'         => $request->email,
-            'nomor_hp'      => $request->phone,
+            'nomor_hp'      => $request->nomor_hp,
             'password'      => Hash::make($request->password),
             'role'          => 'pasien',
             'jenis_kelamin' => $request->jenis_kelamin,
         ]);
 
-        // Otomatis buat profil pasien
         Pasien::create([
             'user_id'       => $user->id,
             'tanggal_lahir' => $request->tanggal_lahir,
             'alamat'        => $request->alamat,
         ]);
 
-        // Auto login setelah register
         Auth::login($user);
         $request->session()->regenerate();
 
+        // FIX: redirect ke dashboard pasien, bukan reservasi
         return redirect()->route('pasien.dashboard')
-            ->with('success', 'Pendaftaran berhasil! Selamat datang, ' . $user->name . '!');
+            ->with('success', 'Pendaftaran berhasil! Selamat datang, ' . $user->nama . '!');
     }
 
     // ==================== LOGOUT ====================
@@ -108,9 +103,9 @@ class AuthController extends Controller
     private function redirectByRole(string $role)
     {
         return match ($role) {
-            'admin'  => redirect()->route('admin.dashboard'),
-            'dokter' => redirect()->route('dokter.dashboard'),
-            'pasien' => redirect()->route('pasien.dashboard'),
+            'admin'  => redirect()->intended(route('admin.dashboard')),
+            'dokter' => redirect()->intended(route('dokter.dashboard')),
+            'pasien' => redirect()->intended(route('pasien.dashboard')), // ← dashboard pasien
             default  => redirect()->route('home'),
         };
     }

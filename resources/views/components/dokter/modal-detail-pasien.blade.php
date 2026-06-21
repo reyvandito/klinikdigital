@@ -7,13 +7,27 @@
             </button>
         </div>
         
-        <div class="space-y-3">
-            <div class="border-b pb-2"><p class="text-sm text-gray-500">Nama Lengkap</p><p id="detailNama" class="font-semibold text-gray-800">-</p></div>
-            <div class="border-b pb-2"><p class="text-sm text-gray-500">Usia</p><p id="detailUsia" class="font-semibold text-gray-800">-</p></div>
-            <div class="border-b pb-2"><p class="text-sm text-gray-500">Keluhan</p><p id="detailKeluhan" class="font-semibold text-gray-800">-</p></div>
-            <div class="border-b pb-2"><p class="text-sm text-gray-500">Tanggal Konsultasi</p><p id="detailTanggal" class="font-semibold text-gray-800">-</p></div>
-            <div class="border-b pb-2"><p class="text-sm text-gray-500">Jam Konsultasi</p><p id="detailJam" class="font-semibold text-gray-800">-</p></div>
-            <div class="border-b pb-2"><p class="text-sm text-gray-500">No. Antrian</p><p id="detailAntrian" class="font-semibold text-gray-800">-</p></div>
+        <div class="space-y-3" id="modalDetailContent">
+            <div class="border-b pb-2">
+                <p class="text-sm text-gray-500">Nama Lengkap</p>
+                <p id="detailNama" class="font-semibold text-gray-800">-</p>
+            </div>
+            <div class="border-b pb-2">
+                <p class="text-sm text-gray-500">Usia</p>
+                <p id="detailUsia" class="font-semibold text-gray-800">-</p>
+            </div>
+            <div class="border-b pb-2">
+                <p class="text-sm text-gray-500">Jenis Kelamin</p>
+                <p id="detailGender" class="font-semibold text-gray-800">-</p>
+            </div>
+            <div class="border-b pb-2">
+                <p class="text-sm text-gray-500">Nomor HP</p>
+                <p id="detailHp" class="font-semibold text-gray-800">-</p>
+            </div>
+            <div class="border-b pb-2">
+                <p class="text-sm text-gray-500">Alamat</p>
+                <p id="detailAlamat" class="font-semibold text-gray-800">-</p>
+            </div>
         </div>
         
         <div class="mt-6 flex justify-end">
@@ -23,21 +37,24 @@
 </div>
 
 <script>
-    let currentDetailId = null;
-    
-    window.openDetailPasienModal = function(pasien) {
-        currentDetailId = pasien.id;
-        document.getElementById('detailNama').innerText = pasien.nama;
-        document.getElementById('detailUsia').innerText = pasien.usia + ' tahun';
-        document.getElementById('detailKeluhan').innerText = pasien.keluhan;
-        document.getElementById('detailTanggal').innerText = pasien.tanggal;
-        document.getElementById('detailJam').innerText = pasien.jam;
-        document.getElementById('detailAntrian').innerText = '#' + pasien.no_antrian;
-        document.getElementById('modalDetailPasien').classList.remove('hidden');
-    };
-    
-    function closeModalDetailPasien() {
-        document.getElementById('modalDetailPasien').classList.add('hidden');
-        currentDetailId = null;
-    }
+function openModalDetailPasien(pasienId) {
+    fetch(`/dokter/pasien/detail/${pasienId}`)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('detailNama').innerText = data.nama || '-';
+            document.getElementById('detailUsia').innerText = data.usia || '-';
+            document.getElementById('detailGender').innerText = data.gender || '-';
+            document.getElementById('detailHp').innerText = data.hp || '-';
+            document.getElementById('detailAlamat').innerText = data.alamat || '-';
+            document.getElementById('modalDetailPasien').classList.remove('hidden');
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Gagal memuat data pasien');
+        });
+}
+
+function closeModalDetailPasien() {
+    document.getElementById('modalDetailPasien').classList.add('hidden');
+}
 </script>

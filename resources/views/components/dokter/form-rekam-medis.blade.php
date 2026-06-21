@@ -1,3 +1,5 @@
+@props(['konsultasis' => [], 'konsultasiTerpilih' => null])
+
 <div class="bg-white rounded-xl shadow-md p-6">
     @if(session('error'))
         <div class="mb-4 p-3 bg-red-100 text-red-700 rounded-lg">{{ session('error') }}</div>
@@ -14,7 +16,7 @@
                     <option value="">-- Pilih Konsultasi --</option>
                     @foreach($konsultasis as $k)
                         <option value="{{ $k->id }}" {{ (old('konsultasi_id') == $k->id || (isset($konsultasiTerpilih) && $konsultasiTerpilih->id == $k->id)) ? 'selected' : '' }}>
-                            {{ $k->pasien->user->name }} - {{ $k->jadwal->tanggal->format('d/m/Y') }} {{ $k->jadwal->jam_mulai }}
+                            {{ $k->pasien->user->nama }} - {{ \Carbon\Carbon::parse($k->jadwal->tanggal)->format('d/m/Y') }} {{ $k->jadwal->jam_mulai }}
                         </option>
                     @endforeach
                 </select>

@@ -1,5 +1,5 @@
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-    <div onclick="alert('Halaman kelola dokter')" class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg shadow-md p-6 hover:shadow-lg transition-all cursor-pointer">
+    <a href="{{ route('admin.dokter.index') }}" class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg shadow-md p-6 hover:shadow-lg transition-all hover:scale-105 transform">
         <div class="flex items-center justify-between text-white">
             <div>
                 <i class="fas fa-user-md text-4xl mb-2"></i>
@@ -8,9 +8,9 @@
             </div>
             <i class="fas fa-arrow-right text-2xl"></i>
         </div>
-    </div>
+    </a>
     
-    <div onclick="alert('Halaman kelola pasien')" class="bg-gradient-to-r from-green-500 to-green-600 rounded-lg shadow-md p-6 hover:shadow-lg transition-all cursor-pointer">
+    <a href="{{ route('admin.pasien.index') }}" class="bg-gradient-to-r from-green-500 to-green-600 rounded-lg shadow-md p-6 hover:shadow-lg transition-all hover:scale-105 transform">
         <div class="flex items-center justify-between text-white">
             <div>
                 <i class="fas fa-users text-4xl mb-2"></i>
@@ -19,9 +19,9 @@
             </div>
             <i class="fas fa-arrow-right text-2xl"></i>
         </div>
-    </div>
+    </a>
     
-    <div onclick="alert('Halaman kelola jadwal')" class="bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg shadow-md p-6 hover:shadow-lg transition-all cursor-pointer">
+    <a href="{{ route('admin.jadwal.index') }}" class="bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg shadow-md p-6 hover:shadow-lg transition-all hover:scale-105 transform">
         <div class="flex items-center justify-between text-white">
             <div>
                 <i class="fas fa-calendar-alt text-4xl mb-2"></i>
@@ -30,5 +30,6 @@
             </div>
             <i class="fas fa-arrow-right text-2xl"></i>
         </div>
-    </div>
+    </a>
 </div>
+

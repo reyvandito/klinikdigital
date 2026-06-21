@@ -1,18 +1,26 @@
-<div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
-    <a href="{{ route('pasien.reservasi.create') }}" class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl p-4 text-center text-white shadow-md hover:shadow-lg transition transform hover:scale-105">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+    <a href="{{ route('pasien.reservasi.create') }}" 
+       class="bg-blue-500 hover:bg-blue-600 rounded-xl p-4 text-center text-white transition transform hover:scale-105">
         <i class="fas fa-calendar-plus text-2xl mb-2 block"></i>
-        <span class="text-sm font-medium">Buat Janji</span>
+        <span class="font-semibold">Buat Janji</span>
+        <p class="text-xs text-blue-100 mt-1">Konsultasi dengan dokter</p>
     </a>
-    <a href="{{ route('dokter') }}" class="bg-gradient-to-r from-green-500 to-green-600 rounded-xl p-4 text-center text-white shadow-md hover:shadow-lg transition transform hover:scale-105">
-        <i class="fas fa-user-md text-2xl mb-2 block"></i>
-        <span class="text-sm font-medium">Cari Dokter</span>
-    </a>
-    <a href="{{ route('pasien.riwayat') }}" class="bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl p-4 text-center text-white shadow-md hover:shadow-lg transition transform hover:scale-105">
+    <a href="{{ route('pasien.riwayat') }}" 
+       class="bg-blue-500 hover:bg-blue-600 rounded-xl p-4 text-center text-white transition transform hover:scale-105">
         <i class="fas fa-history text-2xl mb-2 block"></i>
-        <span class="text-sm font-medium">Riwayat</span>
+        <span class="font-semibold">Riwayat</span>
+        <p class="text-xs text-blue-100 mt-1">Lihat riwayat konsultasi</p>
     </a>
-    <a href="{{ route('pasien.rekam-medis') }}" class="bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl p-4 text-center text-white shadow-md hover:shadow-lg transition transform hover:scale-105">
+    <a href="{{ route('pasien.rekam-medis') }}" 
+       class="bg-blue-500 hover:bg-blue-600 rounded-xl p-4 text-center text-white transition transform hover:scale-105">
         <i class="fas fa-file-medical text-2xl mb-2 block"></i>
-        <span class="text-sm font-medium">Rekam Medis</span>
+        <span class="font-semibold">Rekam Medis</span>
+        <p class="text-xs text-blue-100 mt-1">Riwayat kesehatan Anda</p>
+    </a>
+    <a href="{{ route('pasien.feedback.create') }}" 
+       class="bg-blue-500 hover:bg-blue-600 rounded-xl p-4 text-center text-white transition transform hover:scale-105">
+        <i class="fas fa-comment-dots text-2xl mb-2 block"></i>
+        <span class="font-semibold">Keluhan</span>
+        <p class="text-xs text-blue-100 mt-1">Sampaikan keluhan Anda</p>
     </a>
 </div>

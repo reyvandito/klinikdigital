@@ -102,6 +102,16 @@
                     <i class="fas fa-user-md w-5 text-lg"></i>
                     <span>Data Dokter</span>
                 </a>
+
+                <li>
+    <a href="{{ route('admin.feedback.index') }}" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+        <i class="fas fa-comment-dots w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"></i>
+        <span class="ms-3">Keluhan & Feedback</span>
+        <span class="inline-flex items-center justify-center px-2 ms-3 text-sm font-medium text-gray-800 bg-gray-100 rounded-full dark:bg-gray-700 dark:text-gray-300">
+            {{ App\Models\Feedback::where('status', 'baru')->count() }}
+        </span>
+    </a>
+</li>
                 
                 <a href="{{ route('admin.pasien.index') }}" 
                    class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 {{ request()->routeIs('admin.pasien*') ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }}">

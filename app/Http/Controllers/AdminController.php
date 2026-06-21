@@ -9,6 +9,7 @@ use App\Models\Pasien;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class AdminController extends Controller
 {
@@ -16,20 +17,18 @@ class AdminController extends Controller
     public function index()
     {
         $stats = [
-            'total_dokter'    => Dokter::count(),
-            'total_pasien'    => Pasien::count(),
-            'total_jadwal'    => Jadwal::whereDate('tanggal', today())->count(),
-            'total_konsultasi'=> Konsultasi::whereDate('created_at', today())->count(),
+            'total_dokter'     => Dokter::count(),
+            'total_pasien'     => Pasien::count(),
+            'total_jadwal'     => Jadwal::whereDate('tanggal', today())->count(),
+            'total_konsultasi' => Konsultasi::whereDate('created_at', today())->count(),
         ];
 
-        // Dokter yang masih pending verifikasi
         $dokterPending = Dokter::with('user')
             ->where('status', 'pending')
             ->latest()
             ->take(5)
             ->get();
 
-        // Konsultasi terbaru
         $konsultasiTerbaru = Konsultasi::with(['pasien.user', 'dokter.user', 'jadwal'])
             ->latest()
             ->take(10)
@@ -43,21 +42,18 @@ class AdminController extends Controller
     {
         $query = Dokter::with('user');
 
-        // Filter pencarian
         if ($request->search) {
             $query->whereHas('user', function ($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->search . '%')
+                $q->where('nama', 'like', '%' . $request->search . '%')
                   ->orWhere('email', 'like', '%' . $request->search . '%');
             });
         }
 
-        // Filter status
         if ($request->status) {
             $query->where('status', $request->status);
         }
 
         $dokters = $query->latest()->paginate(10);
-
         return view('pages.admin.dokter', compact('dokters'));
     }
 
@@ -69,18 +65,18 @@ class AdminController extends Controller
     public function dokterStore(Request $request)
     {
         $request->validate([
-            'name'          => 'required|string|min:3|max:100',
+            'nama'          => 'required|string|min:3|max:100',
             'email'         => 'required|email|unique:users,email',
             'nomor_hp'      => 'required|string|min:10|max:15',
             'password'      => 'required|min:6',
             'spesialis'     => 'required|string|max:100',
-            'no_str'        => 'required|string|unique:dokters,no_str',
+            'no_str'        => 'required|string|unique:dokter,no_str',
             'jenis_kelamin' => 'nullable|in:L,P',
+            'foto'          => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        // Buat user dengan role dokter
         $user = User::create([
-            'name'          => $request->name,
+            'nama'          => $request->nama,
             'email'         => $request->email,
             'nomor_hp'      => $request->nomor_hp,
             'password'      => Hash::make($request->password),
@@ -88,12 +84,18 @@ class AdminController extends Controller
             'jenis_kelamin' => $request->jenis_kelamin,
         ]);
 
-        // Buat profil dokter
+        // Upload foto
+        $fotoPath = null;
+        if ($request->hasFile('foto')) {
+            $fotoPath = $request->file('foto')->store('dokter', 'public');
+        }
+
         Dokter::create([
             'user_id'   => $user->id,
             'spesialis' => $request->spesialis,
             'no_str'    => $request->no_str,
-            'status'    => 'aktif', // Admin langsung aktif saat dibuat oleh admin
+            'status'    => 'aktif',
+            'foto'      => $fotoPath,
         ]);
 
         return redirect()->route('admin.dokter.index')
@@ -111,28 +113,36 @@ class AdminController extends Controller
         $dokter = Dokter::with('user')->findOrFail($id);
 
         $request->validate([
-            'name'          => 'required|string|min:3|max:100',
+            'nama'          => 'required|string|min:3|max:100',
             'email'         => 'required|email|unique:users,email,' . $dokter->user_id,
             'nomor_hp'      => 'required|string|min:10|max:15',
             'spesialis'     => 'required|string|max:100',
-            'no_str'        => 'required|string|unique:dokters,no_str,' . $id,
+            'no_str'        => 'required|string|unique:dokter,no_str,' . $id,
             'jenis_kelamin' => 'nullable|in:L,P',
+            'foto'          => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        // Update data user
         $dokter->user->update([
-            'name'          => $request->name,
+            'nama'          => $request->nama,
             'email'         => $request->email,
             'nomor_hp'      => $request->nomor_hp,
             'jenis_kelamin' => $request->jenis_kelamin,
         ]);
 
-        // Update password hanya kalau diisi
-        if ($request->password) {
+        if ($request->filled('password')) {
             $dokter->user->update(['password' => Hash::make($request->password)]);
         }
 
-        // Update data dokter
+        // Upload foto baru jika ada
+        if ($request->hasFile('foto')) {
+            // Hapus foto lama
+            if ($dokter->foto && Storage::disk('public')->exists($dokter->foto)) {
+                Storage::disk('public')->delete($dokter->foto);
+            }
+            $fotoPath = $request->file('foto')->store('dokter', 'public');
+            $dokter->foto = $fotoPath;
+        }
+
         $dokter->update([
             'spesialis' => $request->spesialis,
             'no_str'    => $request->no_str,
@@ -145,27 +155,27 @@ class AdminController extends Controller
     public function dokterDelete($id)
     {
         $dokter = Dokter::findOrFail($id);
-        // Hapus user, dokter akan otomatis terhapus karena cascade
-        $dokter->user->delete();
-
+        
+        // Hapus foto jika ada
+        if ($dokter->foto && Storage::disk('public')->exists($dokter->foto)) {
+            Storage::disk('public')->delete($dokter->foto);
+        }
+        
+        $dokter->user->delete(); // cascade ke dokter & relasinya
         return redirect()->route('admin.dokter.index')
             ->with('success', 'Dokter berhasil dihapus.');
     }
 
     public function dokterVerify($id)
     {
-        $dokter = Dokter::findOrFail($id);
-        $dokter->update(['status' => 'aktif']);
-
+        Dokter::findOrFail($id)->update(['status' => 'aktif']);
         return redirect()->route('admin.dokter.index')
-            ->with('success', 'Dokter berhasil diverifikasi dan diaktifkan.');
+            ->with('success', 'Dokter berhasil diverifikasi.');
     }
 
     public function dokterReject($id)
     {
-        $dokter = Dokter::findOrFail($id);
-        $dokter->update(['status' => 'tidak_aktif']);
-
+        Dokter::findOrFail($id)->update(['status' => 'tidak_aktif']);
         return redirect()->route('admin.dokter.index')
             ->with('warning', 'Dokter ditolak / dinonaktifkan.');
     }
@@ -177,13 +187,12 @@ class AdminController extends Controller
 
         if ($request->search) {
             $query->whereHas('user', function ($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->search . '%')
+                $q->where('nama', 'like', '%' . $request->search . '%')
                   ->orWhere('email', 'like', '%' . $request->search . '%');
             });
         }
 
         $pasiens = $query->latest()->paginate(10);
-
         return view('pages.admin.pasien', compact('pasiens'));
     }
 
@@ -195,7 +204,7 @@ class AdminController extends Controller
     public function pasienStore(Request $request)
     {
         $request->validate([
-            'name'          => 'required|string|min:3|max:100',
+            'nama'          => 'required|string|min:3|max:100',
             'email'         => 'required|email|unique:users,email',
             'nomor_hp'      => 'required|string|min:10|max:15',
             'password'      => 'required|min:6',
@@ -205,7 +214,7 @@ class AdminController extends Controller
         ]);
 
         $user = User::create([
-            'name'          => $request->name,
+            'nama'          => $request->nama,
             'email'         => $request->email,
             'nomor_hp'      => $request->nomor_hp,
             'password'      => Hash::make($request->password),
@@ -234,7 +243,7 @@ class AdminController extends Controller
         $pasien = Pasien::with('user')->findOrFail($id);
 
         $request->validate([
-            'name'          => 'required|string|min:3|max:100',
+            'nama'          => 'required|string|min:3|max:100',
             'email'         => 'required|email|unique:users,email,' . $pasien->user_id,
             'nomor_hp'      => 'required|string|min:10|max:15',
             'tanggal_lahir' => 'nullable|date|before:today',
@@ -243,13 +252,13 @@ class AdminController extends Controller
         ]);
 
         $pasien->user->update([
-            'name'          => $request->name,
+            'nama'          => $request->nama,
             'email'         => $request->email,
             'nomor_hp'      => $request->nomor_hp,
             'jenis_kelamin' => $request->jenis_kelamin,
         ]);
 
-        if ($request->password) {
+        if ($request->filled('password')) {
             $pasien->user->update(['password' => Hash::make($request->password)]);
         }
 
@@ -266,7 +275,6 @@ class AdminController extends Controller
     {
         $pasien = Pasien::findOrFail($id);
         $pasien->user->delete();
-
         return redirect()->route('admin.pasien.index')
             ->with('success', 'Pasien berhasil dihapus.');
     }
@@ -278,7 +286,7 @@ class AdminController extends Controller
 
         if ($request->search) {
             $query->whereHas('dokter.user', function ($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->search . '%');
+                $q->where('nama', 'like', '%' . $request->search . '%');
             });
         }
 
@@ -287,24 +295,20 @@ class AdminController extends Controller
         }
 
         $jadwals = $query->orderBy('tanggal', 'desc')->paginate(15);
-
         return view('pages.admin.jadwal', compact('jadwals'));
     }
 
     public function jadwalUpdateStatus($id)
     {
         $jadwal = Jadwal::findOrFail($id);
-
-        // Toggle status tersedia/tutup
-        $jadwal->update([
-            'status' => $jadwal->status === 'tersedia' ? 'tutup' : 'tersedia',
-        ]);
+        $newStatus = $jadwal->status === 'tersedia' ? 'tutup' : 'tersedia';
+        $jadwal->update(['status' => $newStatus]);
 
         return redirect()->route('admin.jadwal.index')
             ->with('success', 'Status jadwal berhasil diperbarui.');
     }
 
-    // ==================== MANAJEMEN RESERVASI / KONSULTASI ====================
+    // ==================== MANAJEMEN RESERVASI ====================
     public function reservasiIndex(Request $request)
     {
         $query = Konsultasi::with(['pasien.user', 'dokter.user', 'jadwal']);
@@ -315,12 +319,11 @@ class AdminController extends Controller
 
         if ($request->search) {
             $query->whereHas('pasien.user', function ($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->search . '%');
+                $q->where('nama', 'like', '%' . $request->search . '%');
             });
         }
 
         $konsultasis = $query->latest()->paginate(15);
-
         return view('pages.admin.reservasi', compact('konsultasis'));
     }
 
@@ -339,8 +342,7 @@ class AdminController extends Controller
             'status' => 'required|in:menunggu,dikonfirmasi,berlangsung,selesai,dibatalkan',
         ]);
 
-        $konsultasi = Konsultasi::findOrFail($id);
-        $konsultasi->update(['status' => $request->status]);
+        Konsultasi::findOrFail($id)->update(['status' => $request->status]);
 
         return redirect()->route('admin.reservasi.index')
             ->with('success', 'Status reservasi berhasil diperbarui.');
@@ -350,9 +352,9 @@ class AdminController extends Controller
     {
         $konsultasi = Konsultasi::findOrFail($id);
 
-        // Kembalikan sisa kuota jadwal
+        // Kembalikan sisa kuota jadwal jika masih aktif
         $jadwal = $konsultasi->jadwal;
-        if ($jadwal) {
+        if ($jadwal && in_array($konsultasi->status, ['menunggu', 'dikonfirmasi'])) {
             $jadwal->increment('sisa_kuota');
             if ($jadwal->sisa_kuota > 0 && $jadwal->status === 'penuh') {
                 $jadwal->update(['status' => 'tersedia']);
@@ -360,7 +362,6 @@ class AdminController extends Controller
         }
 
         $konsultasi->delete();
-
         return redirect()->route('admin.reservasi.index')
             ->with('success', 'Reservasi berhasil dihapus.');
     }
@@ -377,18 +378,19 @@ class AdminController extends Controller
         $user = auth()->user();
 
         $request->validate([
-            'name'     => 'required|string|min:3|max:100',
+            'nama'     => 'required|string|min:3|max:100',
             'email'    => 'required|email|unique:users,email,' . $user->id,
             'nomor_hp' => 'nullable|string|min:10|max:15',
         ]);
 
         $user->update([
-            'name'     => $request->name,
+            'nama'     => $request->nama,
             'email'    => $request->email,
             'nomor_hp' => $request->nomor_hp,
         ]);
 
-        if ($request->password) {
+        if ($request->filled('password')) {
+            $request->validate(['password' => 'min:6|confirmed']);
             $user->update(['password' => Hash::make($request->password)]);
         }
 
@@ -404,7 +406,6 @@ class AdminController extends Controller
 
     public function settingsUpdate(Request $request)
     {
-        // Placeholder - bisa ditambah logic pengaturan sistem
         return redirect()->route('admin.settings')
             ->with('success', 'Pengaturan berhasil disimpan.');
     }

@@ -8,7 +8,7 @@
 <div class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg shadow-md p-6 text-white mb-6">
     <div class="flex items-center justify-between">
         <div>
-            <h1 class="text-2xl font-bold mb-2">Selamat Datang, Admin!</h1>
+            <h1 class="text-2xl font-bold mb-2">Selamat Datang, {{ Auth::user()->nama ?? 'Admin' }}!</h1>
             <p class="text-blue-100">Kelola sistem dengan mudah melalui dashboard ini.</p>
         </div>
         <div class="hidden md:block">
@@ -18,14 +18,14 @@
 </div>
 
 <!-- Stats Cards -->
-<x-admin.stats-card />
+<x-admin.stats-card :stats="$stats" />
 
 <!-- Menu Cepat -->
 <x-admin.menu-card />
 
 <!-- Dokter Menunggu Verifikasi -->
-<x-admin.dokter-pending />
+<x-admin.dokter-pending :dokterPending="$dokterPending" />
 
 <!-- Aktivitas & Jadwal -->
-<x-admin.aktivitas-jadwal />
+<x-admin.aktivitas-jadwal :konsultasiTerbaru="$konsultasiTerbaru" />
 @endsection

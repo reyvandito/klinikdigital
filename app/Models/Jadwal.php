@@ -3,11 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Jadwal extends Model
 {
-    use HasFactory;
+    protected $table = 'jadwal';
 
     protected $fillable = [
         'dokter_id',
@@ -15,29 +16,17 @@ class Jadwal extends Model
         'jam_mulai',
         'jam_selesai',
         'kuota',
-        'sisa_kuota',
-        'status',
+        'sisa_kuota',  // ← WAJIB ada
+        'status',      // ← WAJIB ada: tersedia | penuh | tutup
     ];
 
-    protected $casts = [
-        'tanggal' => 'date',
-    ];
-
-    // Relasi ke Dokter
-    public function dokter()
+    public function dokter(): BelongsTo
     {
-        return $this->belongsTo(Dokter::class);
+        return $this->belongsTo(Dokter::class, 'dokter_id');
     }
 
-    // Relasi ke Konsultasi (one-to-many)
-    public function konsultasis()
+    public function konsultasi(): HasMany
     {
-        return $this->hasMany(Konsultasi::class);
-    }
-
-    // Cek apakah jadwal masih tersedia
-    public function isTersedia(): bool
-    {
-        return $this->status === 'tersedia' && $this->sisa_kuota > 0;
+        return $this->hasMany(Konsultasi::class, 'jadwal_id');
     }
 }

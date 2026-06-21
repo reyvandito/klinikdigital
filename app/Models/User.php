@@ -1,64 +1,50 @@
 <?php
-
+ 
 namespace App\Models;
-
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+ 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-
+use Illuminate\Database\Eloquent\Relations\HasOne;
+ 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
-
+    use Notifiable;
+ 
     protected $fillable = [
-        'name',
+        'nama',
         'email',
         'password',
         'nomor_hp',
         'role',
         'jenis_kelamin',
     ];
-
+ 
     protected $hidden = [
         'password',
         'remember_token',
     ];
-
-    protected function casts(): array
+ 
+    /**
+     * Accessor: supaya {{ $user->name }} dan {{ $user->nama }} keduanya bekerja
+     * Banyak blade yang pakai $user->name jadi kita buat alias
+     */
+    public function getNameAttribute(): string
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
+        return $this->nama ?? '';
     }
-
-    // Relasi ke tabel dokter (1:1)
-    public function dokter()
+ 
+    public function setNameAttribute(string $value): void
     {
-        return $this->hasOne(Dokter::class);
+        $this->attributes['nama'] = $value;
     }
-
-    // Relasi ke tabel pasien (1:1)
-    public function pasien()
+ 
+    public function dokter(): HasOne
     {
-        return $this->hasOne(Pasien::class);
+        return $this->hasOne(Dokter::class, 'user_id');
     }
-
-    // Helper: cek apakah user ini admin
-    public function isAdmin(): bool
+ 
+    public function pasien(): HasOne
     {
-        return $this->role === 'admin';
-    }
-
-    // Helper: cek apakah user ini dokter
-    public function isDokter(): bool
-    {
-        return $this->role === 'dokter';
-    }
-
-    // Helper: cek apakah user ini pasien
-    public function isPasien(): bool
-    {
-        return $this->role === 'pasien';
+        return $this->hasOne(Pasien::class, 'user_id');
     }
 }

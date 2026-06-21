@@ -6,15 +6,15 @@
 <div class="container mx-auto px-4 py-8">
     
     <x-pasien.welcome-card />
-    <x-pasien.stats-card />
+    <x-pasien.stats-card :stats="$stats" />
     <x-pasien.menu-card />
     
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <x-pasien.janji-temu-card />
-        <x-pasien.rekomendasi-dokter />
+        <x-pasien.janji-temu-card :janjiTemu="$janjiTemu" />
+        <x-pasien.rekomendasi-dokter :dokters="$dokters ?? []" />
     </div>
     
+    <x-pasien.riwayat-card :riwayatTerbaru="$riwayatTerbaru" />
     <x-pasien.tips-card />
-    <x-pasien.riwayat-card />
 </div>
 @endsection

@@ -9,6 +9,6 @@
         <p class="text-gray-500">Riwayat kesehatan dan pengobatan Anda</p>
     </div>
     
-    <x-pasien.rekam-medis-table />
+    <x-pasien.rekam-medis-table :rekamMedis="$rekamMedis" />
 </div>
 @endsection

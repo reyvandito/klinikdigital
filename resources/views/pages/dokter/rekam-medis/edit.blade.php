@@ -11,7 +11,7 @@
             <p class="text-gray-500">Edit data rekam medis pasien</p>
         </div>
         
-        <x-dokter.form-edit-rekam-medis />
+        <x-dokter.form-edit-rekam-medis :rekamMedis="$rekamMedis" />
     </div>
 </div>
 @endsection
