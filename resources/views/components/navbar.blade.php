@@ -1,10 +1,10 @@
-<nav class="bg-white shadow-md">
+<nav class="bg-white shadow-md sticky top-0 z-50">
     <div class="container mx-auto px-4">
-        <div class="flex justify-between items-center py-4">
-            <!-- Logo -->
-            <a href="{{ route('home') }}" class="flex items-center space-x-2 text-blue-500 hover:text-blue-600 transition-colors">
-                <i class="fas fa-hospital-user text-2xl"></i>
-                <span class="font-bold text-xl">Klinik Digital</span>
+        <div class="flex justify-between items-center py-3">
+            {{-- Logo --}}
+            <a href="{{ route('home') }}" class="flex items-center space-x-2 hover:opacity-80 transition">
+                <img src="{{ asset('images/logoklinik.png') }}" alt="Klinik Digital" class="h-10 w-auto">
+                <span class="font-bold text-xl text-gray-800">Klinik Digital</span>
             </a>
 
             <!-- Desktop Menu -->

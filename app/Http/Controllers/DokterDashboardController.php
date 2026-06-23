@@ -186,7 +186,10 @@ class DokterDashboardController extends Controller
             ->where('dokter_id', $dokter->id)
             ->firstOrFail();
         $konsultasi->update(['status' => 'selesai']);
-        return redirect()->back()->with('success', 'Konsultasi selesai.');
+        
+        // Redirect ke halaman sukses
+        return view('pages.dokter.konsultasi-selesai', compact('konsultasi'))
+            ->with('success', 'Konsultasi berhasil diselesaikan!');
     }
 
     public function riwayatKonsultasi()

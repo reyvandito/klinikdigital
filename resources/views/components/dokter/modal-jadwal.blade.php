@@ -2,7 +2,7 @@
     <div class="relative top-20 mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white">
         <div class="flex justify-between items-center mb-4">
             <h3 class="text-lg font-bold">Tambah Jadwal Praktik</h3>
-            <button onclick="closeModalJadwal()" class="text-gray-500 hover:text-gray-700">
+            <button type="button" onclick="closeModalJadwal()" class="text-gray-500 hover:text-gray-700">
                 <i class="fas fa-times text-xl"></i>
             </button>
         </div>
@@ -42,10 +42,30 @@
 
 <script>
 function openModalJadwal() {
-    document.getElementById('modalJadwal').classList.remove('hidden');
+    const modal = document.getElementById('modalJadwal');
+    if (modal) {
+        modal.classList.remove('hidden');
+        const form = modal.querySelector('form');
+        if (form) form.reset();
+    }
 }
 
 function closeModalJadwal() {
-    document.getElementById('modalJadwal').classList.add('hidden');
+    const modal = document.getElementById('modalJadwal');
+    if (modal) {
+        modal.classList.add('hidden');
+    }
 }
+
+// Tutup modal jika klik di luar
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('modalJadwal');
+    if (modal) {
+        modal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModalJadwal();
+            }
+        });
+    }
+});
 </script>

@@ -3,10 +3,10 @@
         <div class="flex justify-between items-center py-3">
             {{-- Logo --}}
             <a href="{{ route('dokter.dashboard') }}" class="flex items-center space-x-2 hover:opacity-80 transition">
-                <i class="fas fa-hospital-user text-2xl text-blue-600"></i>
-                <span class="font-bold text-xl text-gray-800">Klinik Digital</span>
-                <span class="hidden md:inline text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full">Dokter</span>
-            </a>
+    <img src="{{ asset('images/logoklinik.png') }}" alt="Klinik Digital" class="h-10 w-auto">
+    <span class="font-bold text-xl text-gray-800">Klinik Digital</span>
+    <span class="hidden md:inline text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full">Dokter</span>
+</a>
 
             {{-- Menu Tengah (Desktop) --}}
             <div class="hidden md:flex items-center space-x-6">

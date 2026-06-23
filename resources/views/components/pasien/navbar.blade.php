@@ -2,10 +2,10 @@
     <div class="container mx-auto px-4">
         <div class="flex justify-between items-center py-3">
             {{-- Logo --}}
-            <a href="{{ route('pasien.dashboard') }}" class="flex items-center space-x-2 hover:opacity-80 transition">
-                <i class="fas fa-hospital-user text-2xl text-blue-600"></i>
-                <span class="font-bold text-xl text-gray-800">Klinik Digital</span>
-            </a>
+           <a href="{{ route('pasien.dashboard') }}" class="flex items-center space-x-2 hover:opacity-80 transition">
+    <img src="{{ asset('images/logoklinik.png') }}" alt="Klinik Digital" class="h-10 w-auto">
+    <span class="font-bold text-xl text-gray-800">Klinik Digital</span>
+</a>
 
             {{-- Menu Tengah (Desktop) --}}
             <div class="hidden md:flex items-center space-x-6">

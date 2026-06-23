@@ -23,8 +23,6 @@
 <!-- Menu Cepat -->
 <x-admin.menu-card />
 
-<!-- Dokter Menunggu Verifikasi -->
-<x-admin.dokter-pending :dokterPending="$dokterPending" />
 
 <!-- Aktivitas & Jadwal -->
 <x-admin.aktivitas-jadwal :konsultasiTerbaru="$konsultasiTerbaru" />

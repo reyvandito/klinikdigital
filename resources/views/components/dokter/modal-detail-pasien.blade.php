@@ -28,6 +28,14 @@
                 <p class="text-sm text-gray-500">Alamat</p>
                 <p id="detailAlamat" class="font-semibold text-gray-800">-</p>
             </div>
+            <div class="border-b pb-2">
+                <p class="text-sm text-gray-500">Total Konsultasi</p>
+                <p id="detailTotalKonsultasi" class="font-semibold text-gray-800">-</p>
+            </div>
+            <div class="border-b pb-2">
+                <p class="text-sm text-gray-500">Status Terakhir</p>
+                <p id="detailStatusTerakhir" class="font-semibold text-gray-800">-</p>
+            </div>
         </div>
         
         <div class="mt-6 flex justify-end">
@@ -38,19 +46,44 @@
 
 <script>
 function openModalDetailPasien(pasienId) {
+    // Tampilkan loading
+    document.getElementById('detailNama').innerText = 'Memuat...';
+    document.getElementById('detailUsia').innerText = 'Memuat...';
+    document.getElementById('detailGender').innerText = 'Memuat...';
+    document.getElementById('detailHp').innerText = 'Memuat...';
+    document.getElementById('detailAlamat').innerText = 'Memuat...';
+    document.getElementById('detailTotalKonsultasi').innerText = 'Memuat...';
+    document.getElementById('detailStatusTerakhir').innerText = 'Memuat...';
+    
+    // Tampilkan modal
+    document.getElementById('modalDetailPasien').classList.remove('hidden');
+
     fetch(`/dokter/pasien/detail/${pasienId}`)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
         .then(data => {
             document.getElementById('detailNama').innerText = data.nama || '-';
             document.getElementById('detailUsia').innerText = data.usia || '-';
             document.getElementById('detailGender').innerText = data.gender || '-';
             document.getElementById('detailHp').innerText = data.hp || '-';
             document.getElementById('detailAlamat').innerText = data.alamat || '-';
-            document.getElementById('modalDetailPasien').classList.remove('hidden');
+            document.getElementById('detailTotalKonsultasi').innerText = data.total_konsultasi || '0';
+            document.getElementById('detailStatusTerakhir').innerHTML = data.status_terakhir || '-';
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Gagal memuat data pasien');
+            document.getElementById('detailNama').innerText = 'Gagal memuat data';
+            document.getElementById('detailUsia').innerText = '-';
+            document.getElementById('detailGender').innerText = '-';
+            document.getElementById('detailHp').innerText = '-';
+            document.getElementById('detailAlamat').innerText = '-';
+            document.getElementById('detailTotalKonsultasi').innerText = '-';
+            document.getElementById('detailStatusTerakhir').innerText = '-';
+            alert('Gagal memuat data pasien. Silakan coba lagi.');
         });
 }
 

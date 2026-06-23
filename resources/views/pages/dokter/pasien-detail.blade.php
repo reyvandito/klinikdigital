@@ -6,7 +6,7 @@
 <div class="container mx-auto px-4 py-8">
     <div class="max-w-4xl mx-auto">
         <!-- Tombol Kembali -->
-        <a href="{{ url('/dokter/pasien') }}" class="inline-flex items-center text-blue-500 hover:text-blue-600 mb-4">
+        <a href="{{ route('dokter.pasien.index') }}" class="inline-flex items-center text-blue-500 hover:text-blue-600 mb-4">
             <i class="fas fa-arrow-left mr-2"></i> Kembali ke Daftar Pasien
         </a>
         
@@ -16,8 +16,41 @@
                 <h2 class="text-xl font-bold text-white">Detail Pasien</h2>
             </div>
             
-            <div class="p-6" id="detailPasienContainer">
-                <!-- Akan diisi JavaScript -->
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="border-b pb-2">
+                        <p class="text-sm text-gray-500">Nama Lengkap</p>
+                        <p class="font-semibold text-gray-800">{{ $pasien->user->nama ?? '-' }}</p>
+                    </div>
+                    <div class="border-b pb-2">
+                        <p class="text-sm text-gray-500">Usia</p>
+                        <p class="font-semibold text-gray-800">{{ $pasien->usia ?? '-' }}</p>
+                    </div>
+                    <div class="border-b pb-2">
+                        <p class="text-sm text-gray-500">Jenis Kelamin</p>
+                        <p class="font-semibold text-gray-800">{{ $pasien->jenis_kelamin_formatted ?? '-' }}</p>
+                    </div>
+                    <div class="border-b pb-2">
+                        <p class="text-sm text-gray-500">Nomor HP</p>
+                        <p class="font-semibold text-gray-800">{{ $pasien->user->nomor_hp ?? '-' }}</p>
+                    </div>
+                    <div class="border-b pb-2">
+                        <p class="text-sm text-gray-500">Email</p>
+                        <p class="font-semibold text-gray-800">{{ $pasien->user->email ?? '-' }}</p>
+                    </div>
+                    <div class="border-b pb-2">
+                        <p class="text-sm text-gray-500">Alamat</p>
+                        <p class="font-semibold text-gray-800">{{ $pasien->alamat ?? '-' }}</p>
+                    </div>
+                    <div class="border-b pb-2">
+                        <p class="text-sm text-gray-500">Total Konsultasi</p>
+                        <p class="font-semibold text-gray-800">{{ $pasien->konsultasi->count() ?? 0 }}</p>
+                    </div>
+                    <div class="border-b pb-2">
+                        <p class="text-sm text-gray-500">Tanggal Lahir</p>
+                        <p class="font-semibold text-gray-800">{{ $pasien->tanggal_lahir ? \Carbon\Carbon::parse($pasien->tanggal_lahir)->format('d/m/Y') : '-' }}</p>
+                    </div>
+                </div>
             </div>
         </div>
         
@@ -30,13 +63,57 @@
                 <table class="w-full">
                     <thead class="bg-gray-50">
                         <tr>
+                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">No</th>
                             <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">Tanggal</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">Dokter</th>
                             <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">Keluhan</th>
                             <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">Diagnosa</th>
                             <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">Status</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody id="riwayatTableBody" class="divide-y"></tbody>
+                    <tbody class="divide-y">
+                        @forelse($pasien->konsultasi as $index => $konsultasi)
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-4 py-3 text-sm">{{ $index + 1 }}</td>
+                            <td class="px-4 py-3 text-sm">
+                                {{ $konsultasi->jadwal ? \Carbon\Carbon::parse($konsultasi->jadwal->tanggal)->format('d/m/Y') : '-' }}
+                            </td>
+                            <td class="px-4 py-3 text-sm font-medium">
+                                {{ $konsultasi->dokter->user->nama ?? '-' }}
+                            </td>
+                            <td class="px-4 py-3 text-sm max-w-[150px] truncate" title="{{ $konsultasi->keluhan }}">
+                                {{ Str::limit($konsultasi->keluhan, 30) }}
+                            </td>
+                            <td class="px-4 py-3 text-sm">
+                                {{ $konsultasi->rekamMedis ? Str::limit($konsultasi->rekamMedis->diagnosa, 20) : '-' }}
+                            </td>
+                            <td class="px-4 py-3 text-sm">
+                                <span class="px-2 py-1 rounded-full text-xs
+                                    @if($konsultasi->status == 'menunggu') bg-yellow-100 text-yellow-700
+                                    @elseif($konsultasi->status == 'dikonfirmasi') bg-blue-100 text-blue-700
+                                    @elseif($konsultasi->status == 'berlangsung') bg-green-100 text-green-700
+                                    @elseif($konsultasi->status == 'selesai') bg-gray-100 text-gray-700
+                                    @elseif($konsultasi->status == 'dibatalkan') bg-red-100 text-red-700
+                                    @endif">
+                                    {{ $konsultasi->status }}
+                                </span>
+                            </td>
+                            <td class="px-4 py-3 text-sm">
+                                <a href="{{ route('dokter.konsultasi.detail', $konsultasi->id) }}" class="text-blue-500 hover:text-blue-700">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="7" class="px-4 py-8 text-center text-gray-500">
+                                <i class="fas fa-inbox text-4xl mb-2 block"></i>
+                                Belum ada riwayat konsultasi
+                            </td>
+                        </tr>
+                        @endforelse
+                    </tbody>
                 </table>
             </div>
         </div>
@@ -47,8 +124,9 @@
                 <h2 class="text-xl font-bold text-gray-800">Tambah Catatan</h2>
             </div>
             <div class="p-6">
-                <form id="catatanForm">
-                    <textarea id="catatan" rows="4" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Tulis catatan untuk pasien..."></textarea>
+                <form action="{{ route('dokter.pasien.catatan', $pasien->id) }}" method="POST">
+                    @csrf
+                    <textarea name="catatan" rows="4" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Tulis catatan untuk pasien..."></textarea>
                     <button type="submit" class="mt-3 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">
                         <i class="fas fa-save mr-2"></i> Simpan Catatan
                     </button>
@@ -57,134 +135,4 @@
         </div>
     </div>
 </div>
-
-<script>
-    // Data pasien
-    const pasienList = {
-        1: { nama: 'Ahmad Sudrajat', usia: 35, gender: 'Laki-laki', telepon: '0812-3456-7890', email: 'ahmad@gmail.com', alamat: 'Jakarta Selatan' },
-        2: { nama: 'Siti Aminah', usia: 28, gender: 'Perempuan', telepon: '0812-3456-7891', email: 'siti@gmail.com', alamat: 'Jakarta Barat' },
-        3: { nama: 'Budi Santoso', usia: 42, gender: 'Laki-laki', telepon: '0812-3456-7892', email: 'budi@gmail.com', alamat: 'Jakarta Timur' },
-        4: { nama: 'Rina Wati', usia: 25, gender: 'Perempuan', telepon: '0812-3456-7893', email: 'rina@gmail.com', alamat: 'Jakarta Utara' },
-        5: { nama: 'Dedi Firmansyah', usia: 31, gender: 'Laki-laki', telepon: '0812-3456-7894', email: 'dedi@gmail.com', alamat: 'Jakarta Pusat' },
-        6: { nama: 'Lisa Anjani', usia: 19, gender: 'Perempuan', telepon: '0812-3456-7895', email: 'lisa@gmail.com', alamat: 'Bekasi' }
-    };
-    
-    // Data riwayat konsultasi
-    const riwayatKonsultasi = {
-        1: [
-            { tanggal: '10 Mei 2024', keluhan: 'Demam dan batuk', diagnosa: 'Infeksi saluran pernapasan', status: 'Selesai' },
-            { tanggal: '25 Maret 2024', keluhan: 'Sakit kepala', diagnosa: 'Migrain', status: 'Selesai' }
-        ],
-        2: [
-            { tanggal: '15 April 2024', keluhan: 'Demam tinggi', diagnosa: 'Demam berdarah', status: 'Selesai' }
-        ],
-        3: [
-            { tanggal: '20 Mei 2024', keluhan: 'Nyeri dada', diagnosa: 'Gangguan jantung', status: 'Dalam Perawatan' }
-        ],
-        4: [
-            { tanggal: '5 Mei 2024', keluhan: 'Alergi kulit', diagnosa: 'Dermatitis', status: 'Selesai' }
-        ],
-        5: [],
-        6: []
-    };
-    
-    // Ambil ID dari URL
-    const urlSegments = window.location.pathname.split('/');
-    const pasienId = parseInt(urlSegments[urlSegments.length - 1]);
-    
-    function loadDetailPasien() {
-        const pasien = pasienList[pasienId];
-        if (pasien) {
-            const html = `
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="border-b pb-2">
-                        <p class="text-sm text-gray-500">Nama Lengkap</p>
-                        <p class="font-semibold text-gray-800">${pasien.nama}</p>
-                    </div>
-                    <div class="border-b pb-2">
-                        <p class="text-sm text-gray-500">Usia</p>
-                        <p class="font-semibold text-gray-800">${pasien.usia} tahun</p>
-                    </div>
-                    <div class="border-b pb-2">
-                        <p class="text-sm text-gray-500">Jenis Kelamin</p>
-                        <p class="font-semibold text-gray-800">${pasien.gender}</p>
-                    </div>
-                    <div class="border-b pb-2">
-                        <p class="text-sm text-gray-500">Telepon</p>
-                        <p class="font-semibold text-gray-800">${pasien.telepon}</p>
-                    </div>
-                    <div class="border-b pb-2">
-                        <p class="text-sm text-gray-500">Email</p>
-                        <p class="font-semibold text-gray-800">${pasien.email}</p>
-                    </div>
-                    <div class="border-b pb-2">
-                        <p class="text-sm text-gray-500">Alamat</p>
-                        <p class="font-semibold text-gray-800">${pasien.alamat}</p>
-                    </div>
-                </div>
-            `;
-            document.getElementById('detailPasienContainer').innerHTML = html;
-        } else {
-            document.getElementById('detailPasienContainer').innerHTML = '<p class="text-center text-red-500">Pasien tidak ditemukan</p>';
-        }
-    }
-    
-    function loadRiwayat() {
-        const riwayat = riwayatKonsultasi[pasienId] || [];
-        let html = '';
-        
-        if (riwayat.length === 0) {
-            html = `
-                <tr>
-                    <td colspan="4" class="px-4 py-8 text-center text-gray-500">
-                        <i class="fas fa-inbox text-4xl mb-2 block"></i>
-                        Belum ada riwayat konsultasi
-                    </td>
-                </tr>
-            `;
-        } else {
-            riwayat.forEach(item => {
-                const statusClass = item.status === 'Selesai' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700';
-                html += `
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-4 py-3 text-sm">${item.tanggal}</td>
-                        <td class="px-4 py-3 text-sm">${item.keluhan}</td>
-                        <td class="px-4 py-3 text-sm">${item.diagnosa}</td>
-                        <td class="px-4 py-3"><span class="${statusClass} text-xs px-2 py-1 rounded-full">${item.status}</span></td>
-                    </tr>
-                `;
-            });
-        }
-        
-        document.getElementById('riwayatTableBody').innerHTML = html;
-    }
-    
-    // Simpan catatan ke localStorage
-    document.getElementById('catatanForm')?.addEventListener('submit', function(e) {
-        e.preventDefault();
-        const catatan = document.getElementById('catatan').value;
-        
-        if (catatan.trim() === '') {
-            alert('Harap isi catatan!');
-            return;
-        }
-        
-        let semuaCatatan = JSON.parse(localStorage.getItem('catatanPasien') || '{}');
-        if (!semuaCatatan[pasienId]) {
-            semuaCatatan[pasienId] = [];
-        }
-        semuaCatatan[pasienId].push({
-            tanggal: new Date().toLocaleDateString('id-ID'),
-            jam: new Date().toLocaleTimeString(),
-            catatan: catatan
-        });
-        localStorage.setItem('catatanPasien', JSON.stringify(semuaCatatan));
-        
-        alert('✅ Catatan berhasil disimpan!');
-        document.getElementById('catatan').value = '';
-    });
-    
-    loadDetailPasien();
-    loadRiwayat();
-</script>
 @endsection

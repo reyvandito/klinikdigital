@@ -5,79 +5,93 @@
 
 @section('content')
 <div class="bg-white rounded-lg shadow-md p-6">
-    <div class="flex justify-between items-center mb-4">
+    <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
         <h2 class="text-xl font-bold text-gray-800">Daftar Jadwal Konsultasi</h2>
-        <button onclick="alert('Tambah jadwal baru')" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">
-            <i class="fas fa-plus mr-2"></i> Tambah Jadwal
-        </button>
+       
     </div>
-    
+
+   
+
+    @if(session('success'))
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+            {{ session('error') }}
+        </div>
+    @endif
+
     <div class="overflow-x-auto">
-        <table class="w-full">
+        <table class="w-full min-w-[800px]">
             <thead class="bg-gray-50">
                 <tr>
-                    <th class="px-4 py-2 text-left">Pasien</th>
-                    <th class="px-4 py-2 text-left">Dokter</th>
-                    <th class="px-4 py-2 text-left">Tanggal</th>
-                    <th class="px-4 py-2 text-left">Jam</th>
-                    <th class="px-4 py-2 text-left">Status</th>
-                    <th class="px-4 py-2 text-left">Aksi</th>
+                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">No</th>
+                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">Dokter</th>
+                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">Spesialis</th>
+                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">Tanggal</th>
+                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">Jam</th>
+                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">Kuota</th>
+                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">Sisa</th>
+                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">Status</th>
+                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">Aksi</th>
                 </tr>
             </thead>
-            <tbody id="jadwalTableBody"></tbody>
-        </table>
-    </div>
-</div>
-
-<script>
-    const jadwalData = [
-        { id: 1, pasien: 'Ahmad Sudrajat', dokter: 'dr. Andi Wijaya, Sp.PD', tanggal: '2024-05-20', jam: '10:00', status: 'menunggu' },
-        { id: 2, pasien: 'Siti Aminah', dokter: 'dr. Siti Rahma, Sp.A', tanggal: '2024-05-20', jam: '11:00', status: 'menunggu' },
-        { id: 3, pasien: 'Budi Santoso', dokter: 'dr. Andi Wijaya, Sp.PD', tanggal: '2024-05-21', jam: '09:00', status: 'terjadwal' },
-        { id: 4, pasien: 'Rina Wati', dokter: 'dr. Budi Santoso', tanggal: '2024-05-22', jam: '14:00', status: 'pending' },
-        { id: 5, pasien: 'Dedi Firmansyah', dokter: 'dr. Siti Rahma, Sp.A', tanggal: '2024-05-22', jam: '15:00', status: 'selesai' }
-    ];
-    
-    function getStatusBadge(status) {
-        const statusMap = {
-            'menunggu': 'bg-yellow-100 text-yellow-800',
-            'terjadwal': 'bg-blue-100 text-blue-800',
-            'pending': 'bg-orange-100 text-orange-800',
-            'selesai': 'bg-green-100 text-green-800'
-        };
-        return `<span class="${statusMap[status]} px-2 py-1 rounded-full text-xs">${status}</span>`;
-    }
-    
-    function renderJadwal() {
-        let html = '';
-        for (const j of jadwalData) {
-            html += `
-                <tr class="border-b">
-                    <td class="px-4 py-2">${j.pasien}</td>
-                    <td class="px-4 py-2">${j.dokter}</td>
-                    <td class="px-4 py-2">${j.tanggal}</td>
-                    <td class="px-4 py-2">${j.jam}</td>
-                    <td class="px-4 py-2">${getStatusBadge(j.status)}</td>
-                    <td class="px-4 py-2">
-                        <button onclick="editJadwal(${j.id})" class="text-blue-500 hover:text-blue-700 mr-2"><i class="fas fa-edit"></i></button>
-                        <button onclick="hapusJadwal(${j.id})" class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button>
+            <tbody class="divide-y">
+                @forelse($jadwals as $index => $jadwal)
+                <tr class="hover:bg-gray-50">
+                    <td class="px-4 py-3 text-sm">{{ $jadwals->firstItem() + $index }}</td>
+                    <td class="px-4 py-3 text-sm font-medium">
+                        {{ $jadwal->dokter->user->nama ?? '-' }}
+                    </td>
+                    <td class="px-4 py-3 text-sm">
+                        {{ $jadwal->dokter->spesialis ?? '-' }}
+                    </td>
+                    <td class="px-4 py-3 text-sm">
+                        {{ \Carbon\Carbon::parse($jadwal->tanggal)->format('d/m/Y') }}
+                    </td>
+                    <td class="px-4 py-3 text-sm">
+                        {{ $jadwal->jam_mulai }} - {{ $jadwal->jam_selesai }}
+                    </td>
+                    <td class="px-4 py-3 text-sm">
+                        {{ $jadwal->kuota }}
+                    </td>
+                    <td class="px-4 py-3 text-sm">
+                        {{ $jadwal->sisa_kuota }}
+                    </td>
+                    <td class="px-4 py-3 text-sm">
+                        <span class="px-2 py-1 rounded-full text-xs
+                            @if($jadwal->status == 'tersedia') bg-green-100 text-green-700
+                            @elseif($jadwal->status == 'penuh') bg-red-100 text-red-700
+                            @else bg-gray-100 text-gray-700
+                            @endif">
+                            {{ $jadwal->status }}
+                        </span>
+                    </td>
+                    <td class="px-4 py-3 text-sm">
+                        <div class="flex space-x-2">
+                          
+                @empty
+                <tr>
+                    <td colspan="9" class="px-4 py-8 text-center text-gray-500">
+                        <i class="fas fa-calendar-times text-4xl mb-2 block"></i>
+                        Belum ada data jadwal.
+                        <div class="mt-2">
+                            <a href="{{ route('admin.jadwal.create') }}" class="text-blue-500 hover:underline text-sm">
+                                Tambah jadwal pertama →
+                            </a>
+                        </div>
                     </td>
                 </tr>
-            `;
-        }
-        document.getElementById('jadwalTableBody').innerHTML = html;
-    }
-    
-    function editJadwal(id) {
-        alert('Edit jadwal dengan ID: ' + id);
-    }
-    
-    function hapusJadwal(id) {
-        if (confirm('Hapus jadwal ini?')) {
-            alert('Jadwal berhasil dihapus');
-        }
-    }
-    
-    renderJadwal();
-</script>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+
+    <div class="mt-6">
+        {{ $jadwals->links() }}
+    </div>
+</div>
 @endsection

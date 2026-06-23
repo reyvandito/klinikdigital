@@ -98,7 +98,7 @@ Route::middleware(['auth'])->prefix('dokter')->name('dokter.')->group(function (
     // Konsultasi
     Route::prefix('konsultasi')->name('konsultasi.')->middleware('role:dokter')->group(function () {
         Route::post('/mulai/{id}', [DokterDashboardController::class, 'mulaiKonsultasi'])->name('mulai');
-        Route::get('/selesai/{id}', [DokterDashboardController::class, 'selesaiKonsultasi'])->name('selesai');
+        Route::post('/selesai/{id}', [DokterDashboardController::class, 'selesaiKonsultasi'])->name('selesai');
         Route::get('/riwayat', [DokterDashboardController::class, 'riwayatKonsultasi'])->name('riwayat');
         Route::get('/detail/{id}', [DokterDashboardController::class, 'detailKonsultasi'])->name('detail');
     });
