@@ -3,111 +3,183 @@
 @section('title', 'Register - Klinik Digital')
 
 @section('content')
-<div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-lg">
-        <div>
-            <div class="flex justify-center">
+<div class="min-h-screen bg-gradient-to-br from-blue-100 via-white to-green-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full bg-white rounded-2xl shadow-2xl p-8 border border-gray-100">
+
+        <div class="text-center">
+            <div class="flex justify-center mb-4">
                 <i class="fas fa-hospital-user text-5xl text-green-500"></i>
             </div>
-            <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+
+            <h2 class="text-3xl font-bold text-gray-800">
                 Daftar Akun Baru
             </h2>
-            <p class="mt-2 text-center text-sm text-gray-600">
-                Atau
-                <a href="{{ route('login') }}" class="font-medium text-blue-600 hover:text-blue-500">
-                    login ke akun yang sudah ada
+
+            <p class="mt-2 text-sm text-gray-600">
+                Sudah punya akun?
+                <a href="{{ route('login') }}" class="text-blue-600 hover:underline font-semibold">
+                    Login di sini
                 </a>
             </p>
         </div>
-        
-        <form class="mt-8 space-y-6" action="#" method="POST">
+
+        <form class="mt-8 space-y-5" action="{{ route('register.post') }}" method="POST">
             @csrf
-            <div class="space-y-4">
-                <div>
-                    <label for="name" class="block text-sm font-medium text-gray-700">Nama Lengkap</label>
-                    <div class="mt-1">
-                        <input id="name" name="name" type="text" autocomplete="name" required 
-                            class="appearance-none relative block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm"
-                            placeholder="Masukkan nama lengkap">
-                    </div>
-                </div>
-                
-                <div>
-                    <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-                    <div class="mt-1">
-                        <input id="email" name="email" type="email" autocomplete="email" required 
-                            class="appearance-none relative block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm"
-                            placeholder="Masukkan email">
-                    </div>
-                </div>
-                
-                <div>
-                    <label for="phone" class="block text-sm font-medium text-gray-700">No. Telepon</label>
-                    <div class="mt-1">
-                        <input id="phone" name="phone" type="tel" autocomplete="tel" required 
-                            class="appearance-none relative block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm"
-                            placeholder="Masukkan no. telepon">
-                    </div>
-                </div>
-                
-                <div>
-                    <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-                    <div class="mt-1">
-                        <input id="password" name="password" type="password" autocomplete="new-password" required 
-                            class="appearance-none relative block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm"
-                            placeholder="Buat password">
-                    </div>
-                </div>
-                
-                <div>
-                    <label for="password_confirmation" class="block text-sm font-medium text-gray-700">Konfirmasi Password</label>
-                    <div class="mt-1">
-                        <input id="password_confirmation" name="password_confirmation" type="password" autocomplete="new-password" required 
-                            class="appearance-none relative block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm"
-                            placeholder="Ulangi password">
-                    </div>
-                </div>
+
+            {{-- Nama --}}
+            <div>
+                <label for="nama" class="block text-sm font-medium text-gray-700">
+                    Nama Lengkap
+                </label>
+
+                <input
+                    id="nama"
+                    name="nama"
+                    type="text"
+                    value="{{ old('nama') }}"
+                    required
+                    class="mt-1 block w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-green-500 focus:ring-green-500"
+                    placeholder="Masukkan nama lengkap">
             </div>
 
+            {{-- Email --}}
+            <div>
+                <label for="email" class="block text-sm font-medium text-gray-700">
+                    Email
+                </label>
+
+                <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    value="{{ old('email') }}"
+                    required
+                    class="mt-1 block w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-green-500 focus:ring-green-500"
+                    placeholder="Masukkan email">
+            </div>
+
+            {{-- Nomor HP --}}
+            <div>
+                <label for="nomor_hp" class="block text-sm font-medium text-gray-700">
+                    Nomor HP
+                </label>
+
+                <input
+                    id="nomor_hp"
+                    name="nomor_hp"
+                    type="text"
+                    value="{{ old('nomor_hp') }}"
+                    required
+                    class="mt-1 block w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-green-500 focus:ring-green-500"
+                    placeholder="08xxxxxxxxxx">
+            </div>
+
+            {{-- Jenis Kelamin --}}
+            <div>
+                <label for="jenis_kelamin" class="block text-sm font-medium text-gray-700">
+                    Jenis Kelamin
+                </label>
+
+                <select
+                    id="jenis_kelamin"
+                    name="jenis_kelamin"
+                    class="mt-1 block w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-green-500 focus:ring-green-500">
+
+                    <option value="">-- Pilih Jenis Kelamin --</option>
+
+                    <option value="L" {{ old('jenis_kelamin') == 'L' ? 'selected' : '' }}>
+                        Laki-laki
+                    </option>
+
+                    <option value="P" {{ old('jenis_kelamin') == 'P' ? 'selected' : '' }}>
+                        Perempuan
+                    </option>
+                </select>
+            </div>
+
+            {{-- Tanggal Lahir --}}
+            <div>
+                <label for="tanggal_lahir" class="block text-sm font-medium text-gray-700">
+                    Tanggal Lahir
+                </label>
+
+                <input
+                    id="tanggal_lahir"
+                    name="tanggal_lahir"
+                    type="date"
+                    value="{{ old('tanggal_lahir') }}"
+                    class="mt-1 block w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-green-500 focus:ring-green-500">
+            </div>
+
+            {{-- Alamat --}}
+            <div>
+                <label for="alamat" class="block text-sm font-medium text-gray-700">
+                    Alamat
+                </label>
+
+                <textarea
+                    id="alamat"
+                    name="alamat"
+                    rows="3"
+                    class="mt-1 block w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-green-500 focus:ring-green-500"
+                    placeholder="Masukkan alamat">{{ old('alamat') }}</textarea>
+            </div>
+
+            {{-- Password --}}
+            <div>
+                <label for="password" class="block text-sm font-medium text-gray-700">
+                    Password
+                </label>
+
+                <input
+                    id="password"
+                    name="password"
+                    type="password"
+                    required
+                    class="mt-1 block w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-green-500 focus:ring-green-500"
+                    placeholder="Minimal 6 karakter">
+            </div>
+
+            {{-- Konfirmasi Password --}}
+            <div>
+                <label for="password_confirmation" class="block text-sm font-medium text-gray-700">
+                    Konfirmasi Password
+                </label>
+
+                <input
+                    id="password_confirmation"
+                    name="password_confirmation"
+                    type="password"
+                    required
+                    class="mt-1 block w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-green-500 focus:ring-green-500"
+                    placeholder="Ulangi password">
+            </div>
+
+            {{-- Syarat --}}
             <div class="flex items-center">
-                <input id="terms" name="terms" type="checkbox" required 
-                    class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
-                <label for="terms" class="ml-2 block text-sm text-gray-900">
-                    Saya setuju dengan 
-                    <a href="#" class="text-green-600 hover:text-green-500">Syarat & Ketentuan</a>
+                <input
+                    id="terms"
+                    name="terms"
+                    type="checkbox"
+                    required
+                    class="h-4 w-4 rounded border-gray-300 text-green-600">
+
+                <label for="terms" class="ml-2 text-sm text-gray-700">
+                    Saya menyetujui syarat dan ketentuan.
                 </label>
             </div>
 
-            <div>
-                <button type="submit" 
-                    class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-                    <i class="fas fa-user-plus mr-2"></i>
-                    Daftar Sekarang
-                </button>
-            </div>
-        </form>
-        
-        <div class="mt-6">
-            <div class="relative">
-                <div class="absolute inset-0 flex items-center">
-                    <div class="w-full border-t border-gray-300"></div>
-                </div>
-                <div class="relative flex justify-center text-sm">
-                    <span class="px-2 bg-white text-gray-500">Atau daftar dengan</span>
-                </div>
-            </div>
+            {{-- Tombol --}}
+            <button
+                type="submit"
+                class="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-semibold transition duration-300">
 
-            <div class="mt-6 grid grid-cols-2 gap-3">
-                <button class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                    <i class="fab fa-google mr-2"></i>
-                    Google
-                </button>
-                <button class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                    <i class="fab fa-facebook mr-2"></i>
-                    Facebook
-                </button>
-            </div>
-        </div>
+                <i class="fas fa-user-plus mr-2"></i>
+                Daftar Sekarang
+            </button>
+
+        </form>
+
     </div>
 </div>
 @endsection
