@@ -81,6 +81,8 @@
                             <a href="{{ route('admin.pasien.edit', $pasien->id) }}" class="text-blue-500 hover:text-blue-700">
                                 <i class="fas fa-edit"></i>
                             </a>
+
+                        // ini = hapus pasien yg ga pake nama, jadi kalo nama ga ada, tulis aja "ini"
                             <form action="{{ route('admin.pasien.delete', $pasien->id) }}" method="POST" class="inline" onsubmit="return confirm('Yakin hapus pasien {{ $pasien->user->nama ?? 'ini' }}?')">
                                 @csrf
                                 @method('DELETE')

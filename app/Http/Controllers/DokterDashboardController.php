@@ -51,52 +51,59 @@ class DokterDashboardController extends Controller
         ));
     }
 
-    // ==================== PROFILE ====================
-    public function profile()
-    {
-        $dokter = $this->getDokterLogin();
-        $user   = Auth::user();
-        return view('pages.dokter.profile', compact('dokter', 'user'));
+   // ==================== PROFILE ====================
+public function profile()
+{
+    $dokter = $this->getDokterLogin();
+    /** @var \App\Models\User $user */
+    $user = Auth::user();
+    return view('pages.dokter.profile', compact('dokter', 'user'));
+}
+
+public function updateProfile(Request $request)
+{
+    /** @var \App\Models\User $user */
+    $user = Auth::user();
+    $dokter = $this->getDokterLogin();
+
+    $request->validate([
+        'nama'      => 'required|string|min:3|max:100',
+        'email'     => 'required|email|unique:users,email,' . $user->id,
+        'nomor_hp'  => 'nullable|string|min:10|max:15',
+        'spesialis' => 'required|string|max:100',
+        'tarif'     => 'required|integer|min:0|max:1000000',
+    ]);
+
+    $user->update([
+        'nama'     => $request->nama,
+        'email'    => $request->email,
+        'nomor_hp' => $request->nomor_hp,
+    ]);
+
+    if ($request->filled('password')) {
+        $request->validate(['password' => 'min:6|confirmed']);
+        $user->update(['password' => Hash::make($request->password)]);
     }
 
-    public function updateProfile(Request $request)
-    {
-        $user   = Auth::user();
-        $dokter = $this->getDokterLogin();
+    $dokterData = [
+        'spesialis' => $request->spesialis,
+        'tarif'     => $request->tarif,
+    ];
 
-        $request->validate([
-            'nama'      => 'required|string|min:3|max:100',
-            'email'     => 'required|email|unique:users,email,' . $user->id,
-            'nomor_hp'  => 'nullable|string|min:10|max:15',
-            'spesialis' => 'required|string|max:100',
-        ]);
-
-        $user->update([
-            'nama'     => $request->nama,
-            'email'    => $request->email,
-            'nomor_hp' => $request->nomor_hp,
-        ]);
-
-        if ($request->filled('password')) {
-            $request->validate(['password' => 'min:6|confirmed']);
-            $user->update(['password' => Hash::make($request->password)]);
+    if ($request->hasFile('foto')) {
+        $request->validate(['foto' => 'image|mimes:jpeg,png,jpg|max:2048']);
+        if ($dokter->foto) {
+            Storage::disk('public')->delete($dokter->foto);
         }
-
-        if ($request->hasFile('foto')) {
-            $request->validate(['foto' => 'image|mimes:jpeg,png,jpg|max:2048']);
-            if ($dokter->foto) {
-                Storage::disk('public')->delete($dokter->foto);
-            }
-            $path = $request->file('foto')->store('foto-dokter', 'public');
-            $dokter->update(['spesialis' => $request->spesialis, 'foto' => $path]);
-        } else {
-            $dokter->update(['spesialis' => $request->spesialis]);
-        }
-
-        return redirect()->route('dokter.profile')
-            ->with('success', 'Profile berhasil diperbarui.');
+        $path = $request->file('foto')->store('foto-dokter', 'public');
+        $dokterData['foto'] = $path;
     }
 
+    $dokter->update($dokterData);
+
+    return redirect()->route('dokter.profile')
+        ->with('success', 'Profile berhasil diperbarui! Tarif konsultasi: Rp ' . number_format($request->tarif, 0, ',', '.'));
+}
     // ==================== STATUS DOKTER ====================
     public function updateStatus(Request $request)
     {

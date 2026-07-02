@@ -367,37 +367,39 @@ class AdminController extends Controller
             ->with('success', 'Reservasi berhasil dihapus.');
     }
 
-    // ==================== PROFILE ADMIN ====================
-    public function profileIndex()
-    {
-        $user = auth()->user();
-        return view('pages.admin.profile', compact('user'));
+   // ==================== PROFILE ADMIN ====================
+public function profileIndex()
+{
+    /** @var \App\Models\User $user */
+    $user = Auth::user();
+    return view('pages.admin.profile', compact('user'));
+}
+
+public function profileUpdate(Request $request)
+{
+    /** @var \App\Models\User $user */
+    $user = Auth::user();
+
+    $request->validate([
+        'nama'     => 'required|string|min:3|max:100',
+        'email'    => 'required|email|unique:users,email,' . $user->id,
+        'nomor_hp' => 'nullable|string|min:10|max:15',
+    ]);
+
+    $user->update([
+        'nama'     => $request->nama,
+        'email'    => $request->email,
+        'nomor_hp' => $request->nomor_hp,
+    ]);
+
+    if ($request->filled('password')) {
+        $request->validate(['password' => 'min:6|confirmed']);
+        $user->update(['password' => Hash::make($request->password)]);
     }
 
-    public function profileUpdate(Request $request)
-    {
-        $user = auth()->user();
-
-        $request->validate([
-            'nama'     => 'required|string|min:3|max:100',
-            'email'    => 'required|email|unique:users,email,' . $user->id,
-            'nomor_hp' => 'nullable|string|min:10|max:15',
-        ]);
-
-        $user->update([
-            'nama'     => $request->nama,
-            'email'    => $request->email,
-            'nomor_hp' => $request->nomor_hp,
-        ]);
-
-        if ($request->filled('password')) {
-            $request->validate(['password' => 'min:6|confirmed']);
-            $user->update(['password' => Hash::make($request->password)]);
-        }
-
-        return redirect()->route('admin.profile')
-            ->with('success', 'Profile berhasil diperbarui.');
-    }
+    return redirect()->route('admin.profile')
+        ->with('success', 'Profile berhasil diperbarui.');
+}
 
     // ==================== SETTINGS ====================
     public function settingsIndex()

@@ -1,5 +1,10 @@
 @props(['dokters' => []])
 
+@php
+/** @var \Illuminate\Database\Eloquent\Collection|\App\Models\Dokter[] $dokters */
+/** @var \App\Models\Dokter $dokter */
+@endphp
+
 <div>
     @if(session('error'))
         <div class="mb-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl flex items-start gap-3">
@@ -23,9 +28,13 @@
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="dokterGrid">
                     @foreach($dokters as $dokter)
-                    <div class="dokter-card border-2 rounded-xl p-4 cursor-pointer transition-all hover:shadow-md hover:border-blue-300 {{ old('dokter_id') == $dokter->id ? 'border-blue-500 bg-blue-50' : 'border-gray-200' }}"
-                         data-dokter-id="{{ $dokter->id }}"
-                         onclick="selectDokter({{ $dokter->id }})">
+                    @php
+                    /** @var \App\Models\Dokter $dokter */
+                    $dokterId = $dokter->id;
+                    @endphp
+                    <div class="dokter-card border-2 rounded-xl p-4 cursor-pointer transition-all hover:shadow-md hover:border-blue-300 {{ old('dokter_id') == $dokterId ? 'border-blue-500 bg-blue-50' : 'border-gray-200' }}"
+                         data-dokter-id="{{ $dokterId }}"
+                         onclick="selectDokter({{ $dokterId }})">
                         <div class="flex flex-col items-center text-center">
                             <img src="{{ $dokter->foto_url }}" 
                                  alt="{{ $dokter->user->nama }}" 
@@ -40,11 +49,14 @@
                                     <i class="fas fa-check-circle mr-1"></i> Aktif
                                 </span>
                             </div>
+                            <div class="mt-1 text-xs font-bold text-green-600">
+                                {{ $dokter->tarif_formatted ?? 'Rp 50.000' }}
+                            </div>
                         </div>
-                        <input type="radio" name="dokter_id" value="{{ $dokter->id }}" 
+                        <input type="radio" name="dokter_id" value="{{ $dokterId }}" 
                                class="hidden dokter-radio" 
-                               {{ old('dokter_id') == $dokter->id ? 'checked' : '' }}
-                               data-dokter-id="{{ $dokter->id }}">
+                               {{ old('dokter_id') == $dokterId ? 'checked' : '' }}
+                               data-dokter-id="{{ $dokterId }}">
                     </div>
                     @endforeach
                 </div>
@@ -62,6 +74,7 @@
                         <h4 id="selectedDokterNama" class="font-semibold text-gray-800"></h4>
                         <p id="selectedDokterSpesialis" class="text-sm text-blue-500"></p>
                         <p id="selectedDokterHp" class="text-xs text-gray-500"><i class="fas fa-phone mr-1"></i> </p>
+                        <p id="selectedDokterTarif" class="text-sm font-bold text-green-600 mt-1"></p>
                     </div>
                 </div>
             </div>
@@ -118,14 +131,16 @@
 </div>
 
 <script>
-    // Ambil data dokter dari server (DIKONVERSI PAKE JSON.PARSE biar aman)
+    // Ambil data dokter dari server 
     var dokterData = {!! json_encode($dokters->map(function($d) {
+        /** @var \App\Models\Dokter $d */
         return [
             'id' => $d->id,
             'nama' => $d->user->nama,
             'spesialis' => $d->spesialis,
             'foto' => $d->foto_url,
             'nomor_hp' => $d->user->nomor_hp ?? '-',
+            'tarif' => 'Rp ' . number_format($d->tarif ?? 50000, 0, ',', '.'),
         ];
     })) !!};
 
@@ -160,6 +175,7 @@
             document.getElementById('selectedDokterNama').textContent = dokter.nama;
             document.getElementById('selectedDokterSpesialis').textContent = dokter.spesialis;
             document.getElementById('selectedDokterHp').innerHTML = '<i class="fas fa-phone mr-1"></i> ' + dokter.nomor_hp;
+            document.getElementById('selectedDokterTarif').innerHTML = '<i class="fas fa-money-bill-wave mr-1"></i> ' + dokter.tarif;
             document.getElementById('dokterInfo').classList.remove('hidden');
             document.getElementById('jadwalSection').classList.remove('hidden');
             

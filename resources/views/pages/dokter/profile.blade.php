@@ -82,6 +82,21 @@
                 @enderror
             </div>
 
+            {{-- Tarif Konsultasi --}}
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Tarif Konsultasi *</label>
+                <div class="relative">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">Rp</span>
+                    <input type="number" name="tarif" value="{{ old('tarif', $dokter->tarif ?? 0) }}" 
+                           class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 @error('tarif') border-red-500 @enderror" 
+                           min="0" max="1000000" step="1000" required>
+                </div>
+                <p class="text-xs text-gray-400 mt-1">Masukkan 0 untuk GRATIS, maksimal Rp 1.000.000</p>
+                @error('tarif')
+                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
             {{-- No STR (Readonly) --}}
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">No STR</label>

@@ -37,4 +37,16 @@ class Konsultasi extends Model
     {
         return $this->hasOne(RekamMedis::class, 'konsultasi_id');
     }
+
+    // Relasi ke pembayaran
+    public function pembayaran(): HasOne
+    {
+        return $this->hasOne(Pembayaran::class, 'konsultasi_id');
+    }
+
+    // Cek apakah sudah bayar
+    public function getIsPaidAttribute()
+    {
+        return $this->pembayaran && $this->pembayaran->status == 'lunas';
+    }
 }

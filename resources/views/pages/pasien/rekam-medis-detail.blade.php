@@ -72,5 +72,11 @@
             Direkam pada: {{ $rekamMedis->created_at->format('d M Y H:i') }}
         </p>
     </div>
+
+    <a href="{{ route('pasien.rekam-medis.download', $rekamMedis->id) }}" 
+   class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition inline-flex items-center gap-2">
+    <i class="fas fa-file-pdf"></i> Download PDF
+</a>
 </div>
+
 @endsection

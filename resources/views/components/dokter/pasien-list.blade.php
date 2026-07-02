@@ -1,3 +1,10 @@
+@props(['konsultasiHariIni' => []])
+
+@php
+/** @var \Illuminate\Database\Eloquent\Collection|\App\Models\Konsultasi[] $konsultasiHariIni */
+/** @var \App\Models\Konsultasi $konsultasi */
+@endphp
+
 <div class="bg-white rounded-lg shadow-md p-6">
     <div class="flex items-center justify-between mb-4">
         <h2 class="text-xl font-bold text-gray-800">Daftar Pasien Konsultasi</h2>
@@ -7,7 +14,7 @@
     </div>
     
     <div class="space-y-4" id="daftarPasien">
-        @forelse($konsultasiHariIni ?? [] as $konsultasi)
+        @forelse($konsultasiHariIni as $konsultasi)
         <div class="border rounded-lg p-4 hover:shadow-lg transition">
             <div class="flex items-start justify-between">
                 <div class="flex-1">

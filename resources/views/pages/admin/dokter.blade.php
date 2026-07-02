@@ -59,6 +59,7 @@
                             <form action="{{ route('admin.dokter.delete', $dokter->id) }}" method="POST" class="inline">
                                 @csrf
                                 @method('DELETE')
+// ini = hapus dokter yg ga pake nama, jadi kalo nama ga ada, tulis aja "ini"
                                 <button type="submit" class="text-red-500 hover:text-red-700" onclick="return confirm('Yakin hapus dokter {{ $dokter->user->nama ?? 'ini' }}?')">Hapus</button>
                             </form>
                         </td>

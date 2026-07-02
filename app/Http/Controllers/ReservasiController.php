@@ -6,6 +6,7 @@ use App\Models\Dokter;
 use App\Models\Jadwal;
 use App\Models\Konsultasi;
 use App\Models\Pasien;
+use App\Models\Pembayaran;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -40,7 +41,7 @@ class ReservasiController extends Controller
 
         $existing = Konsultasi::where('pasien_id', $pasien->id)
             ->where('jadwal_id', $jadwal->id)
-            ->whereIn('status', ['menunggu', 'dikonfirmasi', 'berlangsung'])
+            ->whereIn('status', ['menunggu_pembayaran', 'menunggu', 'dikonfirmasi', 'berlangsung'])
             ->first();
 
         if ($existing) {
@@ -49,23 +50,36 @@ class ReservasiController extends Controller
                 ->withInput();
         }
 
+        // Buat konsultasi dengan status 'menunggu_pembayaran'
         $konsultasi = Konsultasi::create([
             'pasien_id'  => $pasien->id,
             'dokter_id'  => $request->dokter_id,
             'jadwal_id'  => $jadwal->id,
             'keluhan'    => $request->keluhan,
-            'status'     => 'menunggu',
+            'status'     => 'menunggu_pembayaran',
         ]);
 
+        // Buat pembayaran
+        $tarif = $konsultasi->dokter->tarif ?? 50000;
+        Pembayaran::create([
+            'konsultasi_id' => $konsultasi->id,
+            'order_id' => 'ORDER-' . time() . '-' . $konsultasi->id,
+            'jumlah' => $tarif,
+            'metode' => 'qris',
+            'status' => 'pending',
+            'expired_at' => now()->addMinutes(30),
+        ]);
+
+        // Kurangi sisa kuota (hold)
         $jadwal->decrement('sisa_kuota');
 
         if ($jadwal->fresh()->sisa_kuota <= 0) {
             $jadwal->update(['status' => 'penuh']);
         }
 
-        return redirect()->route('pasien.reservasi.success')
-            ->with('success', 'Reservasi berhasil dibuat!')
-            ->with('konsultasi_id', $konsultasi->id);
+        // Redirect ke halaman pembayaran
+        return redirect()->route('pasien.pembayaran', $konsultasi->id)
+            ->with('success', 'Silakan selesaikan pembayaran untuk melanjutkan konsultasi.');
     }
 
     // ==================== HALAMAN SUKSES ====================
@@ -80,7 +94,7 @@ class ReservasiController extends Controller
         $pasien = Pasien::where('user_id', Auth::id())->firstOrFail();
         $konsultasi = Konsultasi::where('id', $id)
             ->where('pasien_id', $pasien->id)
-            ->whereIn('status', ['menunggu', 'dikonfirmasi'])
+            ->whereIn('status', ['menunggu_pembayaran', 'menunggu', 'dikonfirmasi'])
             ->firstOrFail();
 
         $jadwal = $konsultasi->jadwal;
@@ -102,7 +116,7 @@ class ReservasiController extends Controller
     {
         $pasien = Pasien::where('user_id', Auth::id())->firstOrFail();
 
-        $query = Konsultasi::with(['dokter.user', 'jadwal', 'rekamMedis'])
+        $query = Konsultasi::with(['dokter.user', 'jadwal', 'rekamMedis', 'pembayaran'])
             ->where('pasien_id', $pasien->id);
 
         if ($request->status) {
@@ -111,9 +125,6 @@ class ReservasiController extends Controller
 
         $konsultasis = $query->latest()->paginate(10);
 
-        // Debug: cek apakah ada data
-        // dd($konsultasis);
-
         return view('pages.pasien.riwayat-reservasi', compact('konsultasis'));
     }
 
@@ -121,7 +132,7 @@ class ReservasiController extends Controller
     public function detailRiwayat($id)
     {
         $pasien = Pasien::where('user_id', Auth::id())->firstOrFail();
-        $konsultasi = Konsultasi::with(['dokter.user', 'jadwal', 'rekamMedis'])
+        $konsultasi = Konsultasi::with(['dokter.user', 'jadwal', 'rekamMedis', 'pembayaran'])
             ->where('id', $id)
             ->where('pasien_id', $pasien->id)
             ->firstOrFail();

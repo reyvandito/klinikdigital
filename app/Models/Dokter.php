@@ -15,7 +15,8 @@ class Dokter extends Model
         'status',
         'spesialis',
         'no_str',
-        'foto',  // ← dari migration add_foto_to_dokter_table
+        'foto',
+        'tarif', // ← TAMBAHKAN INI
     ];
 
     public function user(): BelongsTo
@@ -42,5 +43,13 @@ class Dokter extends Model
             return asset('storage/' . $this->foto);
         }
         return asset('images/default-doctor.png');
+    }
+
+    /**
+     * Accessor untuk format tarif
+     */
+    public function getTarifFormattedAttribute(): string
+    {
+        return 'Rp ' . number_format($this->tarif ?? 50000, 0, ',', '.');
     }
 }

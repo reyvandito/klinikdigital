@@ -9,6 +9,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\DokterDashboardController;
 use App\Http\Controllers\DashboardPasienController;
 use App\Http\Controllers\FeedbackController;
+use App\Http\Controllers\PaymentController;
 
 // ==================== HOME & PUBLIC ROUTES ====================
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -135,8 +136,11 @@ Route::middleware(['auth'])->prefix('pasien')->name('pasien.')->group(function (
     Route::get('/dashboard', [DashboardPasienController::class, 'index'])->name('dashboard')->middleware('role:pasien');
     Route::get('/profile', [DashboardPasienController::class, 'profile'])->name('profile')->middleware('role:pasien');
     Route::put('/profile/update', [DashboardPasienController::class, 'updateProfile'])->name('profile.update')->middleware('role:pasien');
+    
+    // Rekam Medis (Pasien)
     Route::get('/rekam-medis', [DashboardPasienController::class, 'rekamMedis'])->name('rekam-medis')->middleware('role:pasien');
     Route::get('/rekam-medis/{id}', [DashboardPasienController::class, 'detailRekamMedis'])->name('rekam-medis.detail')->middleware('role:pasien');
+    Route::get('/rekam-medis/download/{id}', [DashboardPasienController::class, 'downloadPdf'])->name('rekam-medis.download')->middleware('role:pasien');
     
     // Reservasi
     Route::get('/reservasi', [ReservasiController::class, 'create'])->name('reservasi.create')->middleware('role:pasien');
@@ -152,6 +156,13 @@ Route::middleware(['auth'])->prefix('pasien')->name('pasien.')->group(function (
     Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store')->middleware('role:pasien');
     Route::get('/feedback/success', [FeedbackController::class, 'success'])->name('feedback.success')->middleware('role:pasien');
     Route::get('/feedback/history', [FeedbackController::class, 'history'])->name('feedback.history')->middleware('role:pasien');
+
+    // ==================== PEMBAYARAN ====================
+    Route::get('/pembayaran/{konsultasiId}', [PaymentController::class, 'index'])->name('pembayaran')->middleware('role:pasien');
+    Route::get('/pembayaran/success/{konsultasiId}', [PaymentController::class, 'success'])->name('pembayaran.success')->middleware('role:pasien');
+    Route::get('/pembayaran/status/{konsultasiId}', [PaymentController::class, 'status'])->name('pembayaran.status')->middleware('role:pasien');
+    Route::get('/pembayaran/simulate/{konsultasiId}', [PaymentController::class, 'simulate'])->name('pembayaran.simulate')->middleware('role:pasien');
+    Route::get('/pembayaran/webhook-manual/{konsultasiId}', [PaymentController::class, 'webhookManual'])->name('pembayaran.webhook-manual')->middleware('role:pasien');
 });
 
 // ==================== REDIRECT LOGIN KE DASHBOARD SESUAI ROLE ====================
@@ -160,7 +171,9 @@ Route::get('/redirect', function () {
         return redirect('/login');
     }
     
-    $role = auth()->user()->role;
+    /** @var \App\Models\User $user */
+    $user = auth()->user();
+    $role = $user->role;
     
     if ($role === 'admin') {
         return redirect('/admin/dashboard');
