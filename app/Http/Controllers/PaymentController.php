@@ -12,12 +12,12 @@ use Midtrans\Snap;
 
 class PaymentController extends Controller
 {
+    
     public function __construct()
     {
-        // Setup Midtrans
-        Config::$serverKey = 'Mid-server-aht5cU8rbsW5XvIrrIUSDyi2';
-        Config::$clientKey = 'Mid-client-I4fI5ehjroP7FLbs';
-        Config::$isProduction = false;
+        Config::$serverKey = config('midtrans.server_key');
+        Config::$clientKey = config('midtrans.client_key');
+        Config::$isProduction = config('midtrans.is_production');
         Config::$isSanitized = true;
         Config::$is3ds = true;
     }

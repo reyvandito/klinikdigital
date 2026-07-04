@@ -17,7 +17,7 @@
                     <i class="fas fa-users mr-1"></i> Pasien
                 </a>
                 <a href="{{ route('dokter.jadwal.index') }}" class="text-gray-600 hover:text-blue-600 transition font-medium {{ request()->routeIs('dokter.jadwal*') ? 'text-blue-600' : '' }}">
-                    <i class="fas fa-calendar-alt mr-1"></i> Jadwal
+                    <i class="fas fa-calendar-alt mr-1"></i> Jadwal Konsultasi
                 </a>
                 <a href="{{ route('dokter.rekam-medis.index') }}" class="text-gray-600 hover:text-blue-600 transition font-medium {{ request()->routeIs('dokter.rekam-medis*') ? 'text-blue-600' : '' }}">
                     <i class="fas fa-file-medical mr-1"></i> Rekam Medis
@@ -50,18 +50,6 @@
                         <a href="{{ route('dokter.profile') }}" class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-50 transition">
                             <i class="fas fa-user-circle w-5 text-blue-500"></i>
                             <span class="ml-3">Profil</span>
-                        </a>
-                        <a href="{{ route('dokter.jadwal.index') }}" class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-50 transition">
-                            <i class="fas fa-calendar-alt w-5 text-blue-500"></i>
-                            <span class="ml-3">Kelola Jadwal</span>
-                        </a>
-                        <a href="{{ route('dokter.rekam-medis.index') }}" class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-50 transition">
-                            <i class="fas fa-file-medical w-5 text-blue-500"></i>
-                            <span class="ml-3">Rekam Medis</span>
-                        </a>
-                        <a href="{{ route('dokter.feedback.index') }}" class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-50 transition">
-                            <i class="fas fa-comment-dots w-5 text-blue-500"></i>
-                            <span class="ml-3">Feedback Pasien</span>
                         </a>
                         <hr class="my-1">
                         <form method="POST" action="{{ route('logout') }}" class="block">

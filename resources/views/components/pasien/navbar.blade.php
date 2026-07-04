@@ -16,7 +16,7 @@
                     <i class="fas fa-calendar-plus mr-1"></i> Buat Janji
                 </a>
                 <a href="{{ route('pasien.riwayat') }}" class="text-gray-600 hover:text-blue-600 transition font-medium {{ request()->routeIs('pasien.riwayat*') ? 'text-blue-600' : '' }}">
-                    <i class="fas fa-history mr-1"></i> Riwayat
+                    <i class="fas fa-history mr-1"></i> Riwayat Janji Temu
                 </a>
                 <a href="{{ route('pasien.rekam-medis') }}" class="text-gray-600 hover:text-blue-600 transition font-medium {{ request()->routeIs('pasien.rekam-medis*') ? 'text-blue-600' : '' }}">
                     <i class="fas fa-file-medical mr-1"></i> Rekam Medis
@@ -42,10 +42,6 @@
                         <a href="{{ route('pasien.profile') }}" class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-50 transition">
                             <i class="fas fa-user-circle w-5 text-blue-500"></i>
                             <span class="ml-3">Profil</span>
-                        </a>
-                        <a href="{{ route('pasien.feedback.history') }}" class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-50 transition">
-                            <i class="fas fa-list w-5 text-blue-500"></i>
-                            <span class="ml-3">Riwayat Keluhan</span>
                         </a>
                         <hr class="my-1">
                         <form method="POST" action="{{ route('logout') }}" class="block">

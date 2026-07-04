@@ -56,9 +56,14 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     // Manajemen Jadwal
     Route::prefix('jadwal')->name('jadwal.')->middleware('role:admin')->group(function () {
         Route::get('/', [AdminController::class, 'jadwalIndex'])->name('index');
-        Route::get('/update-status/{id}', [AdminController::class, 'jadwalUpdateStatus'])->name('update-status');
+        Route::post('/store', [AdminController::class, 'jadwalStore'])->name('store');
+        Route::get('/create', [AdminController::class, 'jadwalCreate'])->name('create');
+        Route::get('/edit/{id}', [AdminController::class, 'jadwalEdit'])->name('edit');
+        Route::put('/update/{id}', [AdminController::class, 'jadwalUpdate'])->name('update');
+        Route::delete('/delete/{id}', [AdminController::class, 'jadwalDestroy'])->name('destroy');
+        Route::put('/update-status/{id}', [AdminController::class, 'jadwalUpdateStatus'])->name('update-status');
     });
-    
+
     // Manajemen Reservasi
     Route::prefix('reservasi')->name('reservasi.')->middleware('role:admin')->group(function () {
         Route::get('/', [AdminController::class, 'reservasiIndex'])->name('index');
@@ -163,6 +168,8 @@ Route::middleware(['auth'])->prefix('pasien')->name('pasien.')->group(function (
     Route::get('/pembayaran/status/{konsultasiId}', [PaymentController::class, 'status'])->name('pembayaran.status')->middleware('role:pasien');
     Route::get('/pembayaran/simulate/{konsultasiId}', [PaymentController::class, 'simulate'])->name('pembayaran.simulate')->middleware('role:pasien');
     Route::get('/pembayaran/webhook-manual/{konsultasiId}', [PaymentController::class, 'webhookManual'])->name('pembayaran.webhook-manual')->middleware('role:pasien');
+    Route::get('/pembayaran/qris/{konsultasiId}',[PaymentController::class, 'qris'])->name('pasien.pembayaran.qris');
+    
 });
 
 // ==================== REDIRECT LOGIN KE DASHBOARD SESUAI ROLE ====================

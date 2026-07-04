@@ -101,7 +101,7 @@ public function updateProfile(Request $request)
 
     $dokter->update($dokterData);
 
-    return redirect()->route('dokter.profile')
+    return redirect()->route('dokter.dashboard')
         ->with('success', 'Profile berhasil diperbarui! Tarif konsultasi: Rp ' . number_format($request->tarif, 0, ',', '.'));
 }
     // ==================== STATUS DOKTER ====================

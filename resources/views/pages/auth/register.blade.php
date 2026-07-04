@@ -25,6 +25,15 @@
 
         <form class="mt-8 space-y-5" action="{{ route('register.post') }}" method="POST">
             @csrf
+            @if ($errors->any())
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg">
+                    <ul class="list-disc list-inside text-sm">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
             {{-- Nama --}}
             <div>
@@ -83,6 +92,7 @@
                 <select
                     id="jenis_kelamin"
                     name="jenis_kelamin"
+                    required
                     class="mt-1 block w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-green-500 focus:ring-green-500">
 
                     <option value="">-- Pilih Jenis Kelamin --</option>
@@ -108,6 +118,7 @@
                     name="tanggal_lahir"
                     type="date"
                     value="{{ old('tanggal_lahir') }}"
+                    required
                     class="mt-1 block w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-green-500 focus:ring-green-500">
             </div>
 
@@ -121,6 +132,7 @@
                     id="alamat"
                     name="alamat"
                     rows="3"
+                    required
                     class="mt-1 block w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-green-500 focus:ring-green-500"
                     placeholder="Masukkan alamat">{{ old('alamat') }}</textarea>
             </div>

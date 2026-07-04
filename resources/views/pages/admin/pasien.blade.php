@@ -76,18 +76,19 @@
                             {{ $pasien->konsultasi->count() ?? 0 }}
                         </span>
                     </td>
+
+
+                    
                     <td class="px-4 py-3 text-sm">
                         <div class="flex space-x-2">
-                            <a href="{{ route('admin.pasien.edit', $pasien->id) }}" class="text-blue-500 hover:text-blue-700">
-                                <i class="fas fa-edit"></i>
+                            <a href="{{ route('admin.pasien.edit', $pasien->id) }}" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm">Edit
                             </a>
 
-                        // ini = hapus pasien yg ga pake nama, jadi kalo nama ga ada, tulis aja "ini"
                             <form action="{{ route('admin.pasien.delete', $pasien->id) }}" method="POST" class="inline" onsubmit="return confirm('Yakin hapus pasien {{ $pasien->user->nama ?? 'ini' }}?')">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="text-red-500 hover:text-red-700">
-                                    <i class="fas fa-trash"></i>
+                                <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm">
+                                    Hapus
                                 </button>
                             </form>
                         </div>

@@ -20,6 +20,10 @@ class Feedback extends Model
         'respon',
         'respon_at',
     ];
+    
+    protected $casts = [
+        'respon_at' => 'datetime',
+    ];
 
     public function user(): BelongsTo
     {

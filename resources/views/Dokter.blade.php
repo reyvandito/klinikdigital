@@ -21,7 +21,7 @@
             {{-- GANTI: pakai $dokter->foto_url --}}
             <img src="{{ $dokter->foto_url }}" 
                  alt="{{ $dokter->user->nama }}" 
-                 class="w-full h-56 object-cover">
+                 class="w-full h-64 object-contain bg-gray-100 rounded-t-lg">
             <div class="p-5">
                 <h3 class="text-xl font-bold mb-1">{{ $dokter->user->nama }}</h3>
                 <p class="text-blue-500 text-sm mb-2">{{ $dokter->spesialis }}</p>

@@ -84,32 +84,5 @@
             </button>
         </form>
     </div>
-
-    {{-- Kirim Respon --}}
-    <div class="border rounded-lg p-4 mt-4 border-green-200 bg-green-50">
-        <h3 class="font-semibold text-gray-700 border-b pb-2 mb-3">
-            <i class="fas fa-reply text-green-500 mr-2"></i> Kirim Respon
-        </h3>
-        <form action="{{ route('admin.feedback.response', $feedback->id) }}" method="POST">
-            @csrf
-            <div class="mb-3">
-                <textarea name="respon" rows="4" 
-                          class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                          placeholder="Tulis respon untuk pengirim...">{{ old('respon', $feedback->respon) }}</textarea>
-                @error('respon')
-                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                @enderror
-            </div>
-            <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600">
-                <i class="fas fa-paper-plane mr-2"></i> Kirim Respon
-            </button>
-        </form>
-        @if($feedback->respon)
-            <div class="mt-3 p-3 bg-white rounded-lg border border-green-200">
-                <p class="text-sm text-gray-500">Respon dikirim: {{ $feedback->respon_at ? $feedback->respon_at->format('d/m/Y H:i') : '-' }}</p>
-                <p class="text-gray-700 mt-1">{{ $feedback->respon }}</p>
-            </div>
-        @endif
-    </div>
 </div>
 @endsection

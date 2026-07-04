@@ -109,7 +109,7 @@
 
 {{-- Midtrans Snap Script --}}
 @if(isset($snapToken) && $pembayaran->status == 'pending')
-<script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') ?? 'Mid-client-I4fI5ehjroP7FLbs' }}"></script>
+<script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}"></script>
 <script>
     document.getElementById('pay-button').addEventListener('click', function() {
         snap.pay('{{ $snapToken }}', {
@@ -129,4 +129,5 @@
     });
 </script>
 @endif
+
 @endsection
