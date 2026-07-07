@@ -77,16 +77,35 @@
                         @endif
                     </div>
                 </div>
+                
+            @else
+
+                {{-- Belum bayar --}}
+                @if($konsultasi->status == 'menunggu_pembayaran')
+                    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-center mb-4">
+                        <i class="fas fa-credit-card text-yellow-500 text-2xl mb-2 block"></i>
+                        <p class="text-yellow-700 font-semibold">
+                            Pasien belum melakukan pembayaran.
+                        </p>
+                        <p class="text-gray-600 text-sm">
+                            Rekam medis baru dapat diisi setelah pembayaran berhasil.
+                        </p>
+                    </div>
+
+                {{-- Sudah bayar --}}
                 @else
-                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-center mb-4">
-                    <i class="fas fa-exclamation-triangle text-yellow-500 text-2xl mb-2 block"></i>
-                    <p class="text-yellow-700">Belum ada rekam medis untuk konsultasi ini.</p>
-                    <a href="{{ route('dokter.rekam-medis.create', ['konsultasi_id' => $konsultasi->id]) }}" 
-                       class="inline-block mt-2 bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg text-sm transition">
-                        <i class="fas fa-plus mr-1"></i> Isi Rekam Medis Sekarang
-                    </a>
-                </div>
+                    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-center mb-4">
+                        <i class="fas fa-exclamation-triangle text-yellow-500 text-2xl mb-2 block"></i>
+                        <p class="text-yellow-700">Belum ada rekam medis untuk konsultasi ini.</p>
+
+                        <a href="{{ route('dokter.rekam-medis.create', ['konsultasi_id' => $konsultasi->id]) }}"
+                        class="inline-block mt-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm transition">
+                            <i class="fas fa-plus mr-1"></i> Isi Rekam Medis
+                        </a>
+                    </div>
                 @endif
+
+            @endif
 
                 {{-- Tombol Aksi --}}
                 <div class="flex flex-col sm:flex-row gap-3">

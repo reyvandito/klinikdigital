@@ -196,10 +196,6 @@
                         <i class="fas fa-check mr-1"></i> Selesaikan Konsultasi
                     </button>
                 </form>
-                <a href="{{ route('dokter.rekam-medis.create', ['konsultasi_id' => $konsultasi->id]) }}"
-                   class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg transition">
-                    <i class="fas fa-file-medical mr-1"></i> Isi Rekam Medis
-                </a>
             </div>
             @endif
         </div>
