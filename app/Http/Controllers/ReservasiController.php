@@ -50,25 +50,15 @@ class ReservasiController extends Controller
                 ->withInput();
         }
 
-        // Buat konsultasi dengan status 'menunggu_pembayaran'
+        // Buat konsultasi dengan status 'menunggu'
         $konsultasi = Konsultasi::create([
             'pasien_id'  => $pasien->id,
             'dokter_id'  => $request->dokter_id,
             'jadwal_id'  => $jadwal->id,
             'keluhan'    => $request->keluhan,
-            'status'     => 'menunggu_pembayaran',
+            'status'     => 'menunggu',
         ]);
 
-        // Buat pembayaran
-        $tarif = $konsultasi->dokter->tarif ?? 50000;
-        Pembayaran::create([
-            'konsultasi_id' => $konsultasi->id,
-            'order_id' => 'ORDER-' . time() . '-' . $konsultasi->id,
-            'jumlah' => $tarif,
-            'metode' => 'qris',
-            'status' => 'pending',
-            'expired_at' => now()->addMinutes(30),
-        ]);
 
         // Kurangi sisa kuota (hold)
         $jadwal->decrement('sisa_kuota');
@@ -77,9 +67,9 @@ class ReservasiController extends Controller
             $jadwal->update(['status' => 'penuh']);
         }
 
-        // Redirect ke halaman pembayaran
-        return redirect()->route('pasien.pembayaran', $konsultasi->id)
-            ->with('success', 'Silakan selesaikan pembayaran untuk melanjutkan konsultasi.');
+        // Redirect ke halaman detail
+        return redirect()->route('pasien.riwayat.detail', $konsultasi->id)
+            ->with('success', 'Silakan menunggu konfirmasi dokter untuk melanjutkan konsultasi.');
     }
 
     // ==================== HALAMAN SUKSES ====================
@@ -94,7 +84,7 @@ class ReservasiController extends Controller
         $pasien = Pasien::where('user_id', Auth::id())->firstOrFail();
         $konsultasi = Konsultasi::where('id', $id)
             ->where('pasien_id', $pasien->id)
-            ->whereIn('status', ['menunggu_pembayaran', 'menunggu', 'dikonfirmasi'])
+            ->whereIn('status', 'menunggu')
             ->firstOrFail();
 
         $jadwal = $konsultasi->jadwal;

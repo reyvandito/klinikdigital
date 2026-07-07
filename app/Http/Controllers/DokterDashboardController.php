@@ -7,6 +7,7 @@ use App\Models\Jadwal;
 use App\Models\Konsultasi;
 use App\Models\Pasien;
 use App\Models\RekamMedis;
+use App\Models\Pembayaran;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -189,31 +190,63 @@ public function updateProfile(Request $request)
     public function selesaiKonsultasi($id)
     {
         $dokter = $this->getDokterLogin();
-        $konsultasi = Konsultasi::where('id', $id)
+
+        $konsultasi = Konsultasi::with(['dokter', 'pembayaran'])
+            ->where('id', $id)
             ->where('dokter_id', $dokter->id)
             ->firstOrFail();
-        $konsultasi->update(['status' => 'selesai']);
-        
-        // Redirect ke halaman sukses
+
+        // Status menjadi menunggu pembayaran
+        $konsultasi->update([
+            'status' => 'menunggu_pembayaran'
+        ]);
+
+        // Buat pembayaran jika belum ada
+        if (!$konsultasi->pembayaran) {
+
+            $tarif = $konsultasi->dokter->tarif ?? 50000;
+
+            Pembayaran::create([
+                'konsultasi_id' => $konsultasi->id,
+                'order_id'      => 'ORDER-' . time() . '-' . $konsultasi->id,
+                'jumlah'        => $tarif,
+                'metode'        => 'qris',
+                'status'        => 'pending',
+                'expired_at'    => now()->addMinutes(30),
+            ]);
+        }
+
         return view('pages.dokter.konsultasi-selesai', compact('konsultasi'))
-            ->with('success', 'Konsultasi berhasil diselesaikan!');
+            ->with('success', 'Konsultasi selesai. Menunggu pembayaran pasien.');
     }
 
     public function riwayatKonsultasi()
     {
         $dokter = $this->getDokterLogin();
-        $konsultasis = Konsultasi::with(['pasien.user', 'jadwal', 'rekamMedis'])
+
+        $konsultasis = Konsultasi::with([
+                'pasien.user',
+                'jadwal',
+                'rekamMedis',
+                'pembayaran'
+            ])
             ->where('dokter_id', $dokter->id)
-            ->where('status', 'selesai')
+            ->whereIn('status', [
+                'dikonfirmasi',
+                'berlangsung',
+                'menunggu_pembayaran',
+                'selesai'
+            ])
             ->latest()
             ->paginate(15);
+
         return view('pages.dokter.riwayat-konsultasi', compact('konsultasis'));
     }
 
     public function detailKonsultasi($id)
     {
         $dokter = $this->getDokterLogin();
-        $konsultasi = Konsultasi::with(['pasien.user', 'jadwal', 'rekamMedis'])
+        $konsultasi = Konsultasi::with(['pasien.user', 'jadwal', 'rekamMedis', 'pembayaran'])
             ->where('id', $id)
             ->where('dokter_id', $dokter->id)
             ->firstOrFail();

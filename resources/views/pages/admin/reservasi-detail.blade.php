@@ -121,7 +121,7 @@
     @endif
 
     {{-- Update Status Form --}}
-    @if(in_array($konsultasi->status, ['menunggu', 'dikonfirmasi', 'berlangsung']))
+    @if(in_array($konsultasi->status, ['menunggu_pembayaran', 'menunggu', 'dikonfirmasi', 'berlangsung', 'selesai']))
     <div class="border rounded-lg p-4 mt-4 border-yellow-200 bg-yellow-50">
         <h3 class="font-semibold text-gray-700 border-b pb-2 mb-3">
             <i class="fas fa-edit text-yellow-500 mr-2"></i> Update Status

@@ -6,9 +6,9 @@
 <div class="container mx-auto px-4 py-8 max-w-3xl">
     <div class="flex items-center justify-between mb-6">
         <h1 class="text-2xl font-bold text-gray-800">Detail Konsultasi</h1>
-        <a href="{{ route('dokter.konsultasi.riwayat') }}"
+        <a href="{{ route('dokter.pasien.detail', $konsultasi->pasien->id) }}"
            class="text-blue-600 hover:text-blue-800 flex items-center gap-1 text-sm">
-            <i class="fas fa-arrow-left"></i> Kembali ke Riwayat
+            <i class="fas fa-arrow-left"></i> Kembali ke pasien
         </a>
     </div>
 
@@ -140,15 +140,38 @@
                     </div>
                 </div>
             </div>
+            
             @else
             <div class="mt-5 border-t pt-4">
                 <div class="bg-gray-50 rounded-lg p-4 text-center">
                     <i class="fas fa-file-medical text-4xl text-gray-300 mb-2 block"></i>
-                    <p class="text-gray-500">Belum ada rekam medis untuk konsultasi ini.</p>
-                    <a href="{{ route('dokter.rekam-medis.create', ['konsultasi_id' => $konsultasi->id]) }}"
-                       class="inline-block mt-3 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm transition">
-                        <i class="fas fa-plus mr-1"></i> Isi Rekam Medis
-                    </a>
+
+                    @if($konsultasi->status == 'selesai')
+
+                        <p class="text-gray-500">Belum ada rekam medis untuk konsultasi ini.</p>
+
+                        <a href="{{ route('dokter.rekam-medis.create', ['konsultasi_id' => $konsultasi->id]) }}"
+                        class="inline-block mt-3 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm transition">
+                            <i class="fas fa-plus mr-1"></i> Isi Rekam Medis
+                        </a>
+
+                    @elseif($konsultasi->status == 'menunggu_pembayaran')
+
+                        <p class="text-yellow-600 font-medium">
+                            Pasien belum menyelesaikan pembayaran.
+                        </p>
+                        <p class="text-gray-500 text-sm mt-2">
+                            Rekam medis dapat diisi setelah pembayaran berhasil.
+                        </p>
+
+                    @else
+
+                        <p class="text-gray-500">
+                            Rekam medis belum dapat dibuat.
+                        </p>
+
+                    @endif
+
                 </div>
             </div>
             @endif

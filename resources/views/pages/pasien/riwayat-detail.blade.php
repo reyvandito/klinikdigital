@@ -114,11 +114,6 @@
            class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition inline-flex items-center gap-2">
             <i class="fas fa-credit-card"></i> Bayar Sekarang
         </a>
-        <a href="{{ route('pasien.reservasi.batal', $konsultasi->id) }}" 
-           class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition inline-flex items-center gap-2"
-           onclick="return confirm('Yakin ingin membatalkan reservasi ini?')">
-            <i class="fas fa-times"></i> Batalkan
-        </a>
     </div>
 @endif
 

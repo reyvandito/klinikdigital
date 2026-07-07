@@ -16,6 +16,9 @@
                 <a href="{{ route('dokter.pasien.index') }}" class="text-gray-600 hover:text-blue-600 transition font-medium {{ request()->routeIs('dokter.pasien*') ? 'text-blue-600' : '' }}">
                     <i class="fas fa-users mr-1"></i> Pasien
                 </a>
+                <a href="{{ route('dokter.konsultasi.riwayat') }}" class="text-gray-600 hover:text-blue-600 transition font-medium {{ request()->routeIs('dokter.riwayat-konsultasi*') ? 'text-blue-600' : '' }}">
+                    <i class="fas fa-history mr-1"></i> Riwayat Konsultasi
+                </a>
                 <a href="{{ route('dokter.jadwal.index') }}" class="text-gray-600 hover:text-blue-600 transition font-medium {{ request()->routeIs('dokter.jadwal*') ? 'text-blue-600' : '' }}">
                     <i class="fas fa-calendar-alt mr-1"></i> Jadwal Konsultasi
                 </a>

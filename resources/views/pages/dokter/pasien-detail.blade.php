@@ -31,7 +31,7 @@
                         <p class="font-semibold text-gray-800">{{ $pasien->jenis_kelamin_formatted ?? '-' }}</p>
                     </div>
                     <div class="border-b pb-2">
-                        <p class="text-sm text-gray-500">Nomor HP</p>
+                        <p class="text-sm text-gray-500">Nomor HP/WhatsApp</p>
                         <p class="font-semibold text-gray-800">{{ $pasien->user->nomor_hp ?? '-' }}</p>
                     </div>
                     <div class="border-b pb-2">
@@ -57,7 +57,7 @@
         <!-- Riwayat Konsultasi -->
         <div class="bg-white rounded-xl shadow-md overflow-hidden mt-6">
             <div class="bg-gray-50 px-6 py-4 border-b">
-                <h2 class="text-xl font-bold text-gray-800">Riwayat Konsultasi</h2>
+                <h2 class="text-xl font-bold text-gray-800">Riwayat Pasien Konsultasi</h2>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full">
@@ -115,22 +115,6 @@
                         @endforelse
                     </tbody>
                 </table>
-            </div>
-        </div>
-        
-        <!-- Form Catatan -->
-        <div class="bg-white rounded-xl shadow-md overflow-hidden mt-6">
-            <div class="bg-gray-50 px-6 py-4 border-b">
-                <h2 class="text-xl font-bold text-gray-800">Tambah Catatan</h2>
-            </div>
-            <div class="p-6">
-                <form action="{{ route('dokter.pasien.catatan', $pasien->id) }}" method="POST">
-                    @csrf
-                    <textarea name="catatan" rows="4" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Tulis catatan untuk pasien..."></textarea>
-                    <button type="submit" class="mt-3 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">
-                        <i class="fas fa-save mr-2"></i> Simpan Catatan
-                    </button>
-                </form>
             </div>
         </div>
     </div>
