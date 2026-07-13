@@ -4,7 +4,8 @@
 
 @section('content')
 <div class="container mx-auto px-4 py-8">
-    <div class="max-w-4xl mx-auto">
+    {{-- Ganti max-w-4xl jadi max-w-7xl biar super lebar --}}
+    <div class="max-w-7xl mx-auto">
         {{-- Header --}}
         <div class="text-center mb-8">
             <div class="inline-block p-4 bg-blue-50 rounded-full mb-4">

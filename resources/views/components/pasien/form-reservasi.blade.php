@@ -26,32 +26,99 @@
                     <i class="fas fa-user-md text-blue-500 mr-1"></i> Pilih Dokter <span class="text-red-500">*</span>
                 </label>
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="dokterGrid">
+                {{-- SEARCH & FILTER --}}
+                <div class="bg-gray-50 rounded-xl p-4 mb-4 border border-gray-200">
+                    <div class="flex flex-col md:flex-row gap-3">
+                        {{-- Search --}}
+                        <div class="flex-[2] relative">
+                            <input type="text" 
+                                   id="searchDokter"
+                                   placeholder="Cari dokter berdasarkan nama atau spesialis..." 
+                                   class="w-full px-4 py-2.5 pl-10 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
+                            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                        </div>
+                        
+                        {{-- Filter Spesialis --}}
+                        <div class="flex-[3] flex flex-wrap items-center gap-2">
+                            <span class="text-xs font-semibold text-gray-500 flex items-center gap-1">
+                                <i class="fas fa-filter text-blue-500"></i> Filter:
+                            </span>
+                            <button type="button" 
+                                    class="filter-spesialis px-3 py-1.5 bg-blue-500 text-white rounded-lg text-xs font-semibold transition hover:bg-blue-600"
+                                    data-spesialis="">
+                                Semua
+                            </button>
+                            @php
+                                $spesialisList = App\Models\Dokter::where('status', 'aktif')
+                                    ->select('spesialis')
+                                    ->distinct()
+                                    ->pluck('spesialis');
+                            @endphp
+                            @foreach($spesialisList as $spesialis)
+                                <button type="button" 
+                                        class="filter-spesialis px-3 py-1.5 bg-gray-200 text-gray-600 rounded-lg text-xs font-semibold transition hover:bg-gray-300"
+                                        data-spesialis="{{ $spesialis }}">
+                                    {{ ucfirst($spesialis) }}
+                                </button>
+                            @endforeach
+                        </div>
+                    </div>
+                    
+                    {{-- Active Filters --}}
+                    <div id="activeFilters" class="flex flex-wrap items-center gap-2 mt-3 hidden">
+                        <span class="text-xs font-medium text-gray-500">Filter aktif:</span>
+                        <span id="filterSearchBadge" class="hidden inline-flex items-center gap-1 bg-blue-50 text-blue-700 text-xs px-3 py-1 rounded-full border border-blue-200">
+                            <i class="fas fa-search"></i> "<span id="filterSearchText"></span>"
+                            <button type="button" onclick="clearSearch()" class="ml-1 hover:text-blue-900">
+                                <i class="fas fa-times-circle"></i>
+                            </button>
+                        </span>
+                        <span id="filterSpesialisBadge" class="hidden inline-flex items-center gap-1 bg-blue-50 text-blue-700 text-xs px-3 py-1 rounded-full border border-blue-200">
+                            <i class="fas fa-user-md"></i> <span id="filterSpesialisText"></span>
+                            <button type="button" onclick="clearSpesialis()" class="ml-1 hover:text-blue-900">
+                                <i class="fas fa-times-circle"></i>
+                            </button>
+                        </span>
+                        <button type="button" onclick="resetAllFilters()" class="text-xs text-red-400 hover:text-red-600 font-medium">
+                            <i class="fas fa-undo mr-1"></i> Reset semua
+                        </button>
+                    </div>
+                </div>
+
+                {{-- Result Count --}}
+                <p class="text-xs text-gray-400 mb-3">
+                    <span id="dokterCount">{{ $dokters->count() }}</span> dokter tersedia
+                </p>
+                
+                {{-- DOKTER GRID - 4 KOLOM DI DESKTOP --}}
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-4" id="dokterGrid">
                     @foreach($dokters as $dokter)
                     @php
                     /** @var \App\Models\Dokter $dokter */
                     $dokterId = $dokter->id;
                     @endphp
-                    <div class="dokter-card border-2 rounded-xl p-4 cursor-pointer transition-all hover:shadow-md hover:border-blue-300 {{ old('dokter_id') == $dokterId ? 'border-blue-500 bg-blue-50' : 'border-gray-200' }}"
+                    <div class="dokter-card border-2 rounded-xl p-4 cursor-pointer transition-all hover:shadow-lg hover:border-blue-400 {{ old('dokter_id') == $dokterId ? 'border-blue-500 bg-blue-50 shadow-md' : 'border-gray-200 bg-white' }}"
                          data-dokter-id="{{ $dokterId }}"
+                         data-nama="{{ strtolower($dokter->user->nama) }}"
+                         data-spesialis="{{ strtolower($dokter->spesialis) }}"
                          onclick="selectDokter({{ $dokterId }})">
                         <div class="flex flex-col items-center text-center">
                             <img src="{{ $dokter->foto_url }}" 
                                  alt="{{ $dokter->user->nama }}" 
-                                 class="w-20 h-20 rounded-full object-cover border-2 border-gray-200 mb-3">
-                            <h4 class="font-semibold text-gray-800">{{ $dokter->user->nama }}</h4>
-                            <p class="text-sm text-blue-500">{{ $dokter->spesialis }}</p>
-                            <p class="text-xs text-gray-500 mt-1">
-                                <i class="fas fa-phone mr-1"></i> {{ $dokter->user->nomor_hp ?? '-' }}
-                            </p>
+                                 class="w-20 h-20 rounded-full object-cover border-2 {{ old('dokter_id') == $dokterId ? 'border-blue-500' : 'border-gray-200' }} mb-3">
+                            <h4 class="font-semibold text-gray-800 text-sm">{{ $dokter->user->nama }}</h4>
+                            <p class="text-xs text-blue-500">{{ ucfirst($dokter->spesialis) }}</p>
                             <div class="mt-2">
                                 <span class="px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-xs">
                                     <i class="fas fa-check-circle mr-1"></i> Aktif
                                 </span>
                             </div>
                             <div class="mt-1 text-xs font-bold text-green-600">
-                                {{ $dokter->tarif_formatted ?? 'Rp 50.000' }}
+                                Rp {{ number_format($dokter->tarif ?? 50000, 0, ',', '.') }}
                             </div>
+                            <p class="text-xs text-gray-400 mt-1">
+                                <i class="fas fa-phone mr-1"></i> {{ $dokter->user->nomor_hp ?? '-' }}
+                            </p>
                         </div>
                         <input type="radio" name="dokter_id" value="{{ $dokterId }}" 
                                class="hidden dokter-radio" 
@@ -131,7 +198,139 @@
 </div>
 
 <script>
-    // Ambil data dokter dari server 
+    // ============ SEARCH & FILTER ============
+    var searchInput = document.getElementById('searchDokter');
+    var filterButtons = document.querySelectorAll('.filter-spesialis');
+    var dokterCards = document.querySelectorAll('.dokter-card');
+    var dokterCount = document.getElementById('dokterCount');
+    var activeFiltersDiv = document.getElementById('activeFilters');
+    var filterSearchBadge = document.getElementById('filterSearchBadge');
+    var filterSearchText = document.getElementById('filterSearchText');
+    var filterSpesialisBadge = document.getElementById('filterSpesialisBadge');
+    var filterSpesialisText = document.getElementById('filterSpesialisText');
+
+    var currentSearch = '';
+    var currentSpesialis = '';
+
+    function filterDokter() {
+        var search = currentSearch.toLowerCase().trim();
+        var spesialis = currentSpesialis.toLowerCase().trim();
+        var visibleCount = 0;
+
+        dokterCards.forEach(function(card) {
+            var nama = card.getAttribute('data-nama') || '';
+            var cardSpesialis = card.getAttribute('data-spesialis') || '';
+            
+            var matchSearch = true;
+            var matchSpesialis = true;
+            
+            if (search) {
+                matchSearch = nama.includes(search) || cardSpesialis.includes(search);
+            }
+            
+            if (spesialis) {
+                matchSpesialis = cardSpesialis === spesialis;
+            }
+            
+            if (matchSearch && matchSpesialis) {
+                card.style.display = '';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+
+        dokterCount.textContent = visibleCount;
+
+        // Update active filters
+        var hasFilters = search || spesialis;
+        if (hasFilters) {
+            activeFiltersDiv.classList.remove('hidden');
+        } else {
+            activeFiltersDiv.classList.add('hidden');
+        }
+
+        // Update search badge
+        if (search) {
+            filterSearchBadge.classList.remove('hidden');
+            filterSearchText.textContent = search;
+        } else {
+            filterSearchBadge.classList.add('hidden');
+        }
+
+        // Update spesialis badge
+        if (spesialis) {
+            filterSpesialisBadge.classList.remove('hidden');
+            filterSpesialisText.textContent = spesialis;
+        } else {
+            filterSpesialisBadge.classList.add('hidden');
+        }
+    }
+
+    // Search input
+    searchInput.addEventListener('input', function() {
+        currentSearch = this.value;
+        filterDokter();
+    });
+
+    // Filter buttons
+    filterButtons.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var spesialis = this.getAttribute('data-spesialis');
+            
+            // Reset all filter buttons
+            filterButtons.forEach(function(b) {
+                b.classList.remove('bg-blue-500', 'text-white');
+                b.classList.add('bg-gray-200', 'text-gray-600');
+            });
+            
+            if (spesialis === '') {
+                // Semua
+                this.classList.remove('bg-gray-200', 'text-gray-600');
+                this.classList.add('bg-blue-500', 'text-white');
+                currentSpesialis = '';
+            } else {
+                this.classList.remove('bg-gray-200', 'text-gray-600');
+                this.classList.add('bg-blue-500', 'text-white');
+                currentSpesialis = spesialis;
+            }
+            
+            filterDokter();
+        });
+    });
+
+    function clearSearch() {
+        searchInput.value = '';
+        currentSearch = '';
+        filterDokter();
+    }
+
+    function clearSpesialis() {
+        currentSpesialis = '';
+        filterButtons.forEach(function(b) {
+            b.classList.remove('bg-blue-500', 'text-white');
+            b.classList.add('bg-gray-200', 'text-gray-600');
+        });
+        // Set "Semua" aktif
+        document.querySelector('.filter-spesialis[data-spesialis=""]').classList.remove('bg-gray-200', 'text-gray-600');
+        document.querySelector('.filter-spesialis[data-spesialis=""]').classList.add('bg-blue-500', 'text-white');
+        filterDokter();
+    }
+
+    function resetAllFilters() {
+        searchInput.value = '';
+        currentSearch = '';
+        currentSpesialis = '';
+        filterButtons.forEach(function(b) {
+            b.classList.remove('bg-blue-500', 'text-white');
+            b.classList.add('bg-gray-200', 'text-gray-600');
+        });
+        document.querySelector('.filter-spesialis[data-spesialis=""]').classList.remove('bg-gray-200', 'text-gray-600');
+        document.querySelector('.filter-spesialis[data-spesialis=""]').classList.add('bg-blue-500', 'text-white');
+        filterDokter();
+    }
+
+    // ============ SELECT DOKTER ============
     var dokterData = {!! json_encode($dokters->map(function($d) {
         /** @var \App\Models\Dokter $d */
         return [
@@ -144,7 +343,6 @@
         ];
     })) !!};
 
-    // Fungsi pilih dokter
     function selectDokter(dokterId) {
         // Update radio button
         document.querySelectorAll('.dokter-radio').forEach(function(el) {
@@ -153,11 +351,11 @@
         
         // Update card style
         document.querySelectorAll('.dokter-card').forEach(function(el) {
-            el.classList.remove('border-blue-500', 'bg-blue-50');
-            el.classList.add('border-gray-200');
+            el.classList.remove('border-blue-500', 'bg-blue-50', 'shadow-md');
+            el.classList.add('border-gray-200', 'bg-white');
             if (el.getAttribute('data-dokter-id') == dokterId) {
-                el.classList.remove('border-gray-200');
-                el.classList.add('border-blue-500', 'bg-blue-50');
+                el.classList.remove('border-gray-200', 'bg-white');
+                el.classList.add('border-blue-500', 'bg-blue-50', 'shadow-md');
             }
         });
         
@@ -258,5 +456,9 @@
             document.getElementById('keluhanSection').classList.remove('hidden');
             document.getElementById('submitSection').classList.remove('hidden');
         }
+
+        // Set "Semua" filter aktif
+        document.querySelector('.filter-spesialis[data-spesialis=""]').classList.remove('bg-gray-200', 'text-gray-600');
+        document.querySelector('.filter-spesialis[data-spesialis=""]').classList.add('bg-blue-500', 'text-white');
     });
 </script>
