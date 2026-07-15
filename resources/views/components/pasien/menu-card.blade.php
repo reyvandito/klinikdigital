@@ -8,7 +8,7 @@
     <a href="{{ route('pasien.riwayat') }}" 
        class="bg-blue-500 hover:bg-blue-600 rounded-xl p-4 text-center text-white transition transform hover:scale-105">
         <i class="fas fa-history text-2xl mb-2 block"></i>
-        <span class="font-semibold">Riwayat</span>
+        <span class="font-semibold">Riwayat Janji Temu</span>
         <p class="text-xs text-blue-100 mt-1">Lihat riwayat konsultasi</p>
     </a>
     <a href="{{ route('pasien.rekam-medis') }}" 

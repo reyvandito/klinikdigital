@@ -14,7 +14,6 @@
         <x-pasien.rekomendasi-dokter :dokters="$dokters ?? []" />
     </div>
     
-    {{-- Pastikan variable yang dikirim adalah $riwayatTerbaru --}}
     <x-pasien.riwayat-card :riwayatTerbaru="$riwayatTerbaru" />
     <x-pasien.tips-card />
 </div>

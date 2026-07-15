@@ -68,32 +68,37 @@
                             </span>
                         </td>
                         <td class="px-4 py-3">
-                            <div class="flex gap-2">
-                                <a href="{{ route('dokter.pasien.detail', $konsultasi->pasien_id) }}" 
-                                   class="text-blue-500 hover:text-blue-700">
-                                    <i class="fas fa-eye"></i> Detail
-                                </a>
-                                @if($konsultasi->status == 'menunggu' || $konsultasi->status == 'dikonfirmasi')
+                        <div class="flex gap-2">
+                            <a href="{{ route('dokter.pasien.detail', $konsultasi->pasien_id) }}"
+                            class="text-blue-500 hover:text-blue-700">
+                                <i class="fas fa-eye"></i> Detail
+                            </a>
+
+                            @if($konsultasi->status == 'menunggu' || $konsultasi->status == 'dikonfirmasi')
                                 <form action="{{ route('dokter.konsultasi.mulai', $konsultasi->id) }}" method="POST" class="inline">
                                     @csrf
                                     <button type="submit" class="text-green-500 hover:text-green-700">
                                         <i class="fas fa-play"></i> Mulai
                                     </button>
                                 </form>
-                                @endif
-                                @if($konsultasi->status == 'berlangsung')
-                                <a href="{{ route('dokter.rekam-medis.create', ['konsultasi_id' => $konsultasi->id]) }}" 
-                                   class="text-purple-500 hover:text-purple-700">
-                                    <i class="fas fa-file-medical"></i> Rekam Medis
-                                </a>
+                            @endif
+
+                            @if($konsultasi->status == 'berlangsung')
                                 <form action="{{ route('dokter.konsultasi.selesai', $konsultasi->id) }}" method="POST" class="inline">
                                     @csrf
                                     <button type="submit" class="text-gray-500 hover:text-gray-700">
                                         <i class="fas fa-check"></i> Selesai
                                     </button>
                                 </form>
-                                @endif
-                            </div>
+                            @endif
+
+                            @if($konsultasi->status == 'selesai' && !$konsultasi->rekamMedis)
+                                <a href="{{ route('dokter.rekam-medis.create', ['konsultasi_id' => $konsultasi->id]) }}"
+                                class="text-purple-500 hover:text-purple-700">
+                                    <i class="fas fa-file-medical"></i> Rekam Medis
+                                </a>
+                            @endif
+                        </div>
                         </td>
                     </tr>
                     @empty

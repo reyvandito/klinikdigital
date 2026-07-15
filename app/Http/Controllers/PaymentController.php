@@ -12,12 +12,12 @@ use Midtrans\Snap;
 
 class PaymentController extends Controller
 {
+    
     public function __construct()
     {
-        // Setup Midtrans
-        Config::$serverKey = 'Mid-server-aht5cU8rbsW5XvIrrIUSDyi2';
-        Config::$clientKey = 'Mid-client-I4fI5ehjroP7FLbs';
-        Config::$isProduction = false;
+        Config::$serverKey = config('midtrans.server_key');
+        Config::$clientKey = config('midtrans.client_key');
+        Config::$isProduction = config('midtrans.is_production');
         Config::$isSanitized = true;
         Config::$is3ds = true;
     }
@@ -104,7 +104,7 @@ class PaymentController extends Controller
                     'paid_at' => now(),
                     'response' => $payload,
                 ]);
-                $pembayaran->konsultasi->update(['status' => 'dikonfirmasi']);
+                $pembayaran->konsultasi->update(['status' => 'selesai']);
             }
         } elseif ($transactionStatus == 'pending') {
             $pembayaran->update(['status' => 'pending', 'response' => $payload]);
@@ -125,7 +125,7 @@ class PaymentController extends Controller
                 'status' => 'lunas',
                 'paid_at' => now(),
             ]);
-            $pembayaran->konsultasi->update(['status' => 'dikonfirmasi']);
+            $pembayaran->konsultasi->update(['status' => 'selesai']);
         }
 
         return redirect()->route('pasien.pembayaran.success', $konsultasiId)
@@ -171,7 +171,7 @@ class PaymentController extends Controller
                 'status' => 'lunas',
                 'paid_at' => now(),
             ]);
-            $pembayaran->konsultasi->update(['status' => 'dikonfirmasi']);
+            $pembayaran->konsultasi->update(['status' => 'selesai']);
         }
 
         return redirect()->route('pasien.pembayaran.success', $konsultasiId)

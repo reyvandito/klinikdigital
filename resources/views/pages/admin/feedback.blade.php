@@ -1,13 +1,13 @@
 @extends('layouts.admin')
 
-@section('title', 'Keluhan & Feedback')
-@section('page-title', 'Keluhan & Feedback')
+@section('title', 'Keluhan & Masukan')
+@section('page-title', 'Keluhan & Masukan')
 
 @section('content')
 <div class="bg-white rounded-lg shadow-md p-6">
     <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
         <h2 class="text-xl font-bold text-gray-800">
-            <i class="fas fa-comment-dots text-blue-500 mr-2"></i> Daftar Keluhan & Feedback
+            <i class="fas fa-comment-dots text-blue-500 mr-2"></i> Daftar Keluhan & Masukan
         </h2>
         <div class="flex space-x-2">
             <button onclick="location.reload()" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg">

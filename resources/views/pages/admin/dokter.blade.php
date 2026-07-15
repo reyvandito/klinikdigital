@@ -4,10 +4,19 @@
 <div class="container mx-auto px-4 py-8">
     <div class="bg-white rounded-lg shadow p-6">
         <div class="flex justify-between items-center mb-6">
-            <h1 class="text-2xl font-bold">Daftar Dokter</h1>
-            <a href="{{ route('admin.dokter.create') }}" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
-                + Tambah Dokter
-            </a>
+            <h2 class="text-2xl font-bold">Daftar Dokter</h2>
+
+            <div class="flex gap-2">
+                <a href="{{ route('admin.dokter.create') }}"
+                class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">
+                    + Tambah Dokter
+                </a>
+
+                <a href="{{ route('admin.dokter.index') }}"
+                class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </a>
+            </div>
         </div>
 
         @if(session('success'))
@@ -54,13 +63,13 @@
                                 {{ $dokter->status }}
                             </span>
                         </td>
+                        
                         <td class="px-4 py-2 border">
-                            <a href="{{ route('admin.dokter.edit', $dokter->id) }}" class="text-blue-500 hover:text-blue-700 mr-2">Edit</a>
+                            <a href="{{ route('admin.dokter.edit', $dokter->id) }}" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm">Edit</a>
                             <form action="{{ route('admin.dokter.delete', $dokter->id) }}" method="POST" class="inline">
                                 @csrf
                                 @method('DELETE')
-// ini = hapus dokter yg ga pake nama, jadi kalo nama ga ada, tulis aja "ini"
-                                <button type="submit" class="text-red-500 hover:text-red-700" onclick="return confirm('Yakin hapus dokter {{ $dokter->user->nama ?? 'ini' }}?')">Hapus</button>
+                                <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm" onclick="return confirm('Yakin hapus dokter {{ $dokter->user->nama ?? 'ini' }}?')">Hapus</button>
                             </form>
                         </td>
                     </tr>

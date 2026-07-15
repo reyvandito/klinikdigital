@@ -57,15 +57,15 @@
                             </a>
 
                            {{-- Bayar (jika status menunggu_pembayaran) --}}
-@if($konsultasi->status == 'menunggu_pembayaran')
-    <a href="{{ route('pasien.pembayaran', $konsultasi->id) }}" 
-       class="text-green-600 hover:text-green-800 font-semibold text-sm" title="Bayar Sekarang">
-        <i class="fas fa-credit-card"></i> Bayar
-    </a>
-@endif
+                            @if($konsultasi->status == 'menunggu_pembayaran')
+                                <a href="{{ route('pasien.pembayaran', $konsultasi->id) }}" 
+                                class="text-green-600 hover:text-green-800 font-semibold text-sm" title="Bayar Sekarang">
+                                    <i class="fas fa-credit-card"></i> Bayar
+                                </a>
+                            @endif
 
-                            {{-- Batalkan (jika status menunggu_pembayaran, menunggu, atau dikonfirmasi) --}}
-                            @if(in_array($konsultasi->status, ['menunggu_pembayaran', 'menunggu', 'dikonfirmasi']))
+                            {{-- Batalkan (jika status menunggu, atau dikonfirmasi) --}}
+                            @if(in_array($konsultasi->status, ['menunggu', 'dikonfirmasi']))
                                 <a href="{{ route('pasien.reservasi.batal', $konsultasi->id) }}" 
                                    class="text-red-500 hover:text-red-700 text-sm" title="Batalkan"
                                    onclick="return confirm('Yakin ingin membatalkan reservasi ini?')">

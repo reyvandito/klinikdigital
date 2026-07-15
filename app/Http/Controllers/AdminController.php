@@ -299,14 +299,104 @@ class AdminController extends Controller
         return view('pages.admin.jadwal', compact('jadwals'));
     }
 
-    public function jadwalUpdateStatus($id)
+    public function jadwalUpdateStatus(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|in:tersedia,penuh,tutup'
+        ]);
+
+        $jadwal = Jadwal::findOrFail($id);
+
+        $jadwal->status = $request->status;
+        $jadwal->save();
+
+        return redirect()
+            ->route('admin.jadwal.index')
+            ->with('success', 'Status jadwal berhasil diperbarui');
+    }
+
+    public function jadwalCreate()
+    {
+        $dokters = Dokter::with('user')->get();
+
+        return view(
+            'pages.admin.jadwal-form',
+            compact('dokters')
+        );
+    }
+
+    public function jadwalEdit($id)
     {
         $jadwal = Jadwal::findOrFail($id);
-        $newStatus = $jadwal->status === 'tersedia' ? 'tutup' : 'tersedia';
-        $jadwal->update(['status' => $newStatus]);
+        $dokters = Dokter::with('user')->get();
 
-        return redirect()->route('admin.jadwal.index')
-            ->with('success', 'Status jadwal berhasil diperbarui.');
+        return view(
+            'pages.admin.jadwal-form',
+            compact('jadwal', 'dokters')
+        );
+    }
+
+    public function jadwalUpdate(Request $request, $id)
+    {
+        $jadwal = Jadwal::findOrFail($id);
+
+        $request->validate([
+            'dokter_id' => 'required',
+            'tanggal' => 'required|date',
+            'jam_mulai' => 'required',
+            'jam_selesai' => 'required|after:jam_mulai',
+            'kuota' => 'required|integer|min:1',
+        ]);
+
+        $jadwal->update([
+            'dokter_id' => $request->dokter_id,
+            'tanggal' => $request->tanggal,
+            'jam_mulai' => $request->jam_mulai,
+            'jam_selesai' => $request->jam_selesai,
+            'kuota' => $request->kuota,
+            'sisa_kuota' => $request->kuota,
+            'status' => 'tersedia',
+        ]);
+
+        return redirect()
+            ->route('admin.jadwal.index')
+            ->with('success', 'Jadwal berhasil diperbarui');
+    }
+
+    public function jadwalStore(Request $request)
+    {
+        $request->validate([
+            'dokter_id' => 'required|exists:dokter,id',
+            'tanggal' => 'required|date',
+            'jam_mulai' => 'required',
+            'jam_selesai' => 'required|after:jam_mulai',
+            'kuota' => 'required|integer|min:1',
+        ]);
+
+        Jadwal::create([
+            'dokter_id' => $request->dokter_id,
+            'tanggal' => $request->tanggal,
+            'jam_mulai' => $request->jam_mulai,
+            'jam_selesai' => $request->jam_selesai,
+            'kuota' => $request->kuota,
+            'sisa_kuota' => $request->kuota,
+            'status' => 'tersedia',
+        ]);
+
+        return redirect()
+                ->route('admin.jadwal.index')
+                ->with('success', 'Jadwal berhasil ditambahkan');
+    }
+
+    public function jadwalDestroy($id)
+    {
+        $jadwal = Jadwal::findOrFail($id);
+
+        $jadwal->delete();
+
+        return redirect()
+            ->route('admin.jadwal.index')
+            ->with('success', 'Jadwal berhasil dihapus');
     }
 
     // ==================== MANAJEMEN RESERVASI ====================

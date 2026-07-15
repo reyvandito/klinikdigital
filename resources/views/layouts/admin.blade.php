@@ -106,7 +106,7 @@
                 <li>
     <a href="{{ route('admin.feedback.index') }}" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
         <i class="fas fa-comment-dots w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"></i>
-        <span class="ms-3">Keluhan & Feedback</span>
+        <span class="ms-3">Keluhan & Masukan</span>
         <span class="inline-flex items-center justify-center px-2 ms-3 text-sm font-medium text-gray-800 bg-gray-100 rounded-full dark:bg-gray-700 dark:text-gray-300">
             {{ App\Models\Feedback::where('status', 'baru')->count() }}
         </span>
@@ -147,8 +147,8 @@
                 
                 <a href="{{ route('admin.settings') }}" 
                    class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 {{ request()->routeIs('admin.settings') ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }}">
-                    <i class="fas fa-cog w-5 text-lg"></i>
-                    <span>Pengaturan</span>
+                    <i class="fas fa-heartbeat text-white text-2xl"></i>
+                    <span>Informasi Klinik</span>
                 </a>
             </nav>
         </div>
@@ -193,9 +193,6 @@
                         <div id="dropdownMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50">
                             <a href="{{ route('admin.profile') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
                                 <i class="fas fa-user mr-2"></i> Profile
-                            </a>
-                            <a href="{{ route('admin.settings') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
-                                <i class="fas fa-cog mr-2"></i> Settings
                             </a>
                             <hr class="my-1">
                             <form action="{{ route('logout') }}" method="POST">

@@ -63,6 +63,20 @@ class AuthController extends Controller
             'tanggal_lahir'         => 'nullable|date|before:today',
             'alamat'                => 'nullable|string|max:255',
             'jenis_kelamin'         => 'nullable|in:L,P',
+
+            ],[
+            'nama.required' => 'Nama lengkap wajib diisi.',
+            'email.required' => 'Email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'email.unique' => 'Email sudah terdaftar.',
+            'nomor_hp.required' => 'Nomor HP wajib diisi.',
+            'jenis_kelamin.required' => 'Jenis kelamin wajib dipilih.',
+            'tanggal_lahir.required' => 'Tanggal lahir wajib diisi.',
+            'alamat.required' => 'Alamat wajib diisi.',
+            'password.required' => 'Password wajib diisi.',
+            'password.min' => 'Password minimal 6 karakter.',
+            'password.confirmed' => 'Konfirmasi password tidak cocok.',
+            'terms.accepted' => 'Anda harus menyetujui syarat dan ketentuan.',
         ]);
 
         $user = User::create([
@@ -80,12 +94,12 @@ class AuthController extends Controller
             'alamat'        => $request->alamat,
         ]);
 
-        Auth::login($user);
-        $request->session()->regenerate();
+        //Auth::login($user);
+        //$request->session()->regenerate();
 
         // FIX: redirect ke dashboard pasien, bukan reservasi
-        return redirect()->route('pasien.dashboard')
-            ->with('success', 'Pendaftaran berhasil! Selamat datang, ' . $user->nama . '!');
+        return redirect()->route('home')
+            ->with('success', 'Anda berhasil membuat akun.');
     }
 
     // ==================== LOGOUT ====================

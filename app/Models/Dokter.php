@@ -34,6 +34,11 @@ class Dokter extends Model
         return $this->hasMany(Konsultasi::class, 'dokter_id');
     }
 
+    public function jadwals()
+    {
+        return $this->hasMany(Jadwal::class);
+    }
+
     /**
      * Accessor untuk foto dengan fallback ke default
      */
