@@ -43,7 +43,7 @@ class ReservasiController extends Controller
             ->where('jadwal_id', $jadwal->id)
             ->whereIn('status', ['menunggu_pembayaran', 'menunggu', 'dikonfirmasi', 'berlangsung'])
             ->first();
-2
+
 
         if ($existing) {
             return redirect()->back()
