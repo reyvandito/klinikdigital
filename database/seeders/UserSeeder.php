@@ -14,7 +14,7 @@ class UserSeeder extends Seeder
             'nama' => 'Admin Klinik',
             'email' => 'admin@klinik.com',
             'nomor_hp' => '08123456789',
-            'password' => Hash::make('password'),
+            'password' => Hash::make('paassword'),
             'role' => 'admin',
             'jenis_kelamin' => 'L',
         ]);
